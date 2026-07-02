@@ -23,7 +23,7 @@
                         <label for="floatingInput">Password</label>
                     </div>
                     <br>
-                    <a href="{{ route('catatan-kegiatan.index') }}"><button type="submit" class="btn btn-primary">Login</button></a>
+                    <a href="#"><button type="submit" class="btn btn-primary">Login</button></a>
                 </form>
             </div>
         </div>

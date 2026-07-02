@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daftar_nilais', function (Blueprint $table) {
+        Schema::create('konsentrasi_keahlian',function (Blueprint $table){
             $table->id();
-            $table->string('tujuan_pembelajaran');
-            $table->integer('skor');
-            $table->string('deskripsi');
+            $table->string('program_keahlian');
+            $table->string('konsentrasi-keahlian');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('daftar_nilais');
+        Schema::dropIfExist('konsentrasi_keahlian');
     }
 };

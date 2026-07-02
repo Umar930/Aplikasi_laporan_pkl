@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jurnal_kompetensis', function (Blueprint $table) {
+        Schema::create('tujuan_pembelajaran_indikator',function (Blueprint $table){
             $table->id();
-            $table->string('kompetensi_dasar');
-            $table->string('pelaksanaan_pembelajaran');
-            $table->string('nilai_minimal_kompetensi');
-            $table->string('nilai_kompetensi');
-            $table->string('tanggal');
-            $table->string('keterangan');
+            $table->string('point_utama');
+            $table->string('point_details')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jurnal_kompetensis');
+        Schema::dropIfExists('tujuan_pembelajaran_indikator');
     }
 };

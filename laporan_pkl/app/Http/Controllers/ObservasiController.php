@@ -44,7 +44,7 @@ class ObservasiController extends Controller
      */
     public function edit(Observasi $observasi)
     {
-        return view('observasi.edit' compact('observasi'))
+        return view('observasi.edit',compact('observasi'));
     }
 
     /**
