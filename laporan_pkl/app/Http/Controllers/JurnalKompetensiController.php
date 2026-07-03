@@ -12,7 +12,7 @@ class JurnalKompetensiController extends Controller
      */
     public function index()
     {
-        //
+        $jurnal_kompetensi=Jurnal_Kompetensi::all();
     }
 
     /**

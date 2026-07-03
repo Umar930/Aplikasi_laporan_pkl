@@ -12,7 +12,7 @@ class ObservasiController extends Controller
      */
     public function index()
     {
-        //
+        $observasi=Observasi::all();
     }
 
     /**

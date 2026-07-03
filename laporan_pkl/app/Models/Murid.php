@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Murid extends Model
+class Murid extends Authenticatable
 {
+    protected $table='murid';
     protected $fillable=[
         'nama',
         'kelas',
@@ -24,4 +26,18 @@ class Murid extends Model
         'dudi_id',
         'guru_pembimbing_id',
     ];
+
+    public function dudi(){
+      return $this->belongsTo(Identitas_Dudi::class);
+    }
+
+    public function pembimbing(){
+        return $this->belongsTo(Guru_Pembimbing::class);
+    }
+
+    public function konsentrasi_keahlian(){
+        return $this->belongsTo(Konsentrasi_Keahlian::class);
+    }
 }
+
+

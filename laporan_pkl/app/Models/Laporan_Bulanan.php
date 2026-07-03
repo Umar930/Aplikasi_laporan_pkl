@@ -17,4 +17,16 @@ class laporan_bulanan extends Model
         'status_verifikasi',
         'diverifikasi_oleh_dudi',
     ];
+
+    public function murid(){
+        return $this->belongsTo(Murid::class);
+    }
+
+    public function dudi(){
+        return $this->belongsTo(Identitas_Dudi::class);
+    }
+
+    public function pembimbing(){
+        return $this->belongsTo(Guru_Pembimbing::class);
+    }
 }

@@ -42,6 +42,18 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'guru' => [
+            'driver' => 'session',
+            'provider' => 'App/Models/Guru_Pembimbing',
+        ],
+        'dudi' => [
+            'driver' => 'session',
+            'provider' => 'App/Models/identitas_Dudi',
+        ],
+        'murid' => [
+            'driver' => 'session',
+            'provider' => 'App/Models/Murid',
+        ],
     ],
 
     /*

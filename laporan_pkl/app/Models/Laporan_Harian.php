@@ -18,4 +18,8 @@ class laporan_harian extends Model
       'diverifikasi_oleh_guru',
       'waktu_diverifikasi',
     ];
+
+    public function murid(){
+        return $this->belongsTo(Murid::class);
+    }
 }

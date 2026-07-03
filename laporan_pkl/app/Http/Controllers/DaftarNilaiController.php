@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Daftar_nilai;
+use App\Models\Laporan_Nilai;
 use Illuminate\Http\Request;
 
 class DaftarNilaiController extends Controller
@@ -12,7 +12,7 @@ class DaftarNilaiController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -34,7 +34,7 @@ class DaftarNilaiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Daftar_nilai $daftar_nilai)
+    public function show()
     {
         //
     }
@@ -42,7 +42,7 @@ class DaftarNilaiController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Daftar_nilai $daftar_nilai)
+    public function edit()
     {
         //
     }
@@ -50,7 +50,7 @@ class DaftarNilaiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Daftar_nilai $daftar_nilai)
+    public function update(Request $request,)
     {
         //
     }
@@ -58,7 +58,7 @@ class DaftarNilaiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Daftar_nilai $daftar_nilai)
+    public function destroy()
     {
         //
     }

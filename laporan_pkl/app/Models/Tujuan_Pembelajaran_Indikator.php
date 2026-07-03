@@ -11,4 +11,8 @@ class Tujuan_Pembelajaran_Indikator extends Model
         'point_utama',
         'point_details'
     ];
+
+    public function laporan_nilai(){
+        return $this->hasMany(Tujuan_Pembelajaran_Indikator::class);
+    }
 }

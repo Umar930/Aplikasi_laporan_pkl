@@ -18,4 +18,12 @@ class Jurnal_kompetensi extends Model
         'diverifikasi_oleh_guru',
         'diverifikasi_oleh_dudi',
     ];
+
+    public function murid(){
+        return $this->belongsTo(Murid::class);
+    }
+
+    public function kompetensi(){
+        return $this->belongsTo(Kompetensi_Dasar::class);
+    }
 }

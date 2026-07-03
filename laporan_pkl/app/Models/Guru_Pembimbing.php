@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+// use Illuminate\Database\Eloquent\Model;
 
-class Guru_Pembimbing extends Model
+class Guru_Pembimbing extends Authenticatable
 {
     protected $fillable=[
         'nama',
@@ -12,4 +13,8 @@ class Guru_Pembimbing extends Model
         'email',
         'password',
     ];
-}
+
+    public function murid(){
+        return $this->hasMany(Murid::class);
+    }
+} 

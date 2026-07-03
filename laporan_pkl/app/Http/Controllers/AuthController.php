@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Identitas_Dudi;
+use App\Models\Murid;
+use App\Models\Guru_Pembimbing;
 
 class AuthController extends Controller
 {
@@ -14,8 +17,7 @@ class AuthController extends Controller
 
     }
 
-    public function register(){
-        
+    public function register(Request $request){
 
     }
 
