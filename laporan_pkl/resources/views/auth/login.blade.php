@@ -12,7 +12,7 @@
         <div class="card col-md-3">
             <div class="card-body">
                 <h2 style="text-align:center;" class="fw-bold">Login</h2>
-                <form action="">
+                <form action="{{ route('laporan-bulanan') }}">
                     <div class="form-floating">
                         <input type="email" placeholder="Email" class="form-control" id="floatingInput">
                         <label for="floatingInput">Email</label>
@@ -23,7 +23,7 @@
                         <label for="floatingInput">Password</label>
                     </div>
                     <br>
-                    <a href="#"><button type="submit" class="btn btn-primary">Login</button></a>
+                    <button type="submit" class="btn btn-primary">Login</button>
                 </form>
             </div>
         </div>
