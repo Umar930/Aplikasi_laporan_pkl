@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('murid_id')->constrained('murid')->onDelete('cascade');
             $table->integer('nisn');
             $table->date('tanggal_mulai');
-            $table->date('tanggal_berkahir');
+            $table->date('tanggal_berakhir');
             $table->foreignId('indikator_id')->constrained('tujuan_pembelajaran_indikator')->onDelete('cascade');
             $table->integer('skor');
             $table->string('deskripsi')->nullable();

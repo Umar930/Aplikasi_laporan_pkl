@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class HarianController extends Controller
 {
     public function index(){
-
+        
     }
     public function show(){
 
