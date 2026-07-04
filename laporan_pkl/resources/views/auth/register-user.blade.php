@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 <body>
-    <div class="mt-5" style="display:flex; justify-content:center;">
-        <div class="card col-md-4">
+    <div style="display:flex; justify-content:center;">
+        <div class="card mt-5 col-md-4">
             <div class="card-body">
-                <h2 style="text-align:center;" class="fw-bold">Login</h2>
-                <form action="{{ route('bulanan') }}">
+                <h2 style="text-align:center;" class="fw-bold">Register</h2>
+                <form action="{{ route('login') }}">
                     <div class="input-group">
                         <div class="form-floating">
                             <input type="email" placeholder="Email" class="form-control" id="floatingInput" required>
@@ -33,7 +33,17 @@
                         </span>
                     </div>
                     <br>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <div class="input-group">
+                        <div class="form-floating">
+                            <input type="password" placeholder="Konfirmasi Password" class="form-control" id="floatingInput" required>
+                            <label for="floatingInput">Konfirmasi Password</label>
+                        </div>
+                        <span class="input-group-text">
+                            <i class="bi bi-key-fill text-secondary"></i>
+                        </span>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-success">Register</button>
                 </form>
             </div>
         </div>

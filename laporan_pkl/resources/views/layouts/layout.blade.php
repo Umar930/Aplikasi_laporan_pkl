@@ -17,7 +17,7 @@
             left: 0;
             z-index: 100;
             width: 240px;
-            background-color: #048bfa;
+            background-color: #38393a;
             padding-top: 20px;
         }
         .sidebar .nav-link {
@@ -41,14 +41,14 @@
 <body>
     <div class="sidebar d-flex flex-column p-3" >
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <i class="bi bi-shop fs-4 me-3 text-success"></i>
+            <i class="bi bi-journal-text fs-1 me-3 text-primary"></i>
             <span class="fs-4 fw-bold">Aplikasi Laporan PKL</span>
         </a>
         <hr class="text-secondary">
         <ul class="nav nav-pills flex-column mb-auto gap-1">
             <li class="nav-item">
-                <a href="{{ route('laporan-bulanan') }}" class="nav-link {{ request()->is('laporan-bulanan') ? 'active' : '' }}">
-                    <i class="bi bi-house-fill me-2"></i> Laporan Bulanan
+                <a href="{{ route('bulanan') }}" class="nav-link {{ request()->is('laporan-bulanan') ? 'active' : '' }}">
+                    <i class="bi bi-journals me-2"></i> Laporan Bulanan
                 </a>
             </li>
             <li>
@@ -57,23 +57,23 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('laporan-nilai') }}" class="nav-link {{ request()->is('laporan-nilai') ? 'active' : '' }}">
+                <a href="{{ route('nilai') }}" class="nav-link {{ request()->is('laporan-nilai') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
                 </a>
             </li>
             <li>
-                <a href="{{ route('laporan-harian') }}" class="nav-link {{ request()->is('laporan-harian') ? 'active' : '' }}">
+                <a href="{{ route('harian') }}" class="nav-link {{ request()->is('laporan-harian') ? 'active' : '' }}">
                     <i class="bi bi-clipboard-fill me-2"></i> Laporan Harian
                 </a>
             </li>
             <li>
-                <a href="{{ route('jurnal-kompetensi') }}" class="nav-link {{ request()->is('jurnal-kompetensi') ? 'active' : '' }}">
-                    <i class="bi bi-clipboard-fill me-2"></i> Jurnal Kompetensi
+                <a href="{{ route('kompetensi') }}" class="nav-link {{ request()->is('jurnal-kompetensi') ? 'active' : '' }}">
+                    <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
                 </a>
             </li>
             <li>
                 <a href="{{ route('profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
-                    <i class="bi bi-clipboard-fill me-2"></i> Profil
+                    <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
         </ul>
