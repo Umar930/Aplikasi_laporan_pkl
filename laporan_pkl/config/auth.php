@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\User;
+use App\Models\Murid;
+use App\Models\Guru_Pembimbing;
+use App\Models\Identitas_Dudi;
 
 return [
 
@@ -44,15 +47,15 @@ return [
         ],
         'guru' => [
             'driver' => 'session',
-            'provider' => 'App/Models/Guru_Pembimbing',
+            'provider' => 'gurus',
         ],
         'dudi' => [
             'driver' => 'session',
-            'provider' => 'App/Models/identitas_Dudi',
+            'provider' => 'dudis',
         ],
         'murid' => [
             'driver' => 'session',
-            'provider' => 'App/Models/Murid',
+            'provider' => 'murids',
         ],
     ],
 
@@ -77,6 +80,18 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
+        ],
+        'gurus'=>[
+            'driver'=>'eloquent',
+            'model'=> App\Models\Guru_Pembimbing::class,
+        ],
+        'dudis'=>[
+            'driver'=>'eloquent',
+            'model'=> App\Models\Identitas_Dudi::class,
+        ],
+        'gurus'=>[
+            'driver'=>'eloquent',
+            'model'=> App\Models\Murid::class,
         ],
 
         // 'users' => [

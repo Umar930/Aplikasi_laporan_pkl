@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Laporan_Nilai;
+use App\Models\Tujuan_Pembelajaran_Indikator;
 use Illuminate\Http\Request;
 
 class DaftarNilaiController extends Controller
@@ -12,7 +13,9 @@ class DaftarNilaiController extends Controller
      */
     public function index()
     {
-        
+        $nilai=Laporan_Nilai::all();
+        $indikator=Tujuan_Pembelajaran_Indikator::all();
+        return view('daftar-nilai.index',compact('nilai','indikator'));
     }
 
     /**
@@ -20,7 +23,8 @@ class DaftarNilaiController extends Controller
      */
     public function create()
     {
-        //
+        $nilai=Laporan_Nilai::all();
+        return view('daftar-nilai.tambah');
     }
 
     /**
@@ -42,9 +46,10 @@ class DaftarNilaiController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit()
+    public function edit(String $id)
     {
-        //
+        $nilai=Laporan_Nilai::findOrFail($id);
+        return view('daftar-nilai.edit');
     }
 
     /**

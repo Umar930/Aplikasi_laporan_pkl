@@ -13,6 +13,7 @@ class ObservasiController extends Controller
     public function index()
     {
         $observasi=Observasi::all();
+        return view('observasi.index',compact('observasi'));
     }
 
     /**
@@ -20,7 +21,7 @@ class ObservasiController extends Controller
      */
     public function create()
     {
-        //
+        return view('observasi.tambah');
     }
 
     /**
@@ -50,7 +51,7 @@ class ObservasiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Observasi $observasi)
+    public function update(Request $request, String $id)
     {
         //
     }
@@ -58,7 +59,7 @@ class ObservasiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Observasi $observasi)
+    public function destroy(String $id)
     {
         //
     }
