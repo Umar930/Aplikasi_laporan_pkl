@@ -13,6 +13,6 @@ class Tujuan_Pembelajaran_Indikator extends Model
     ];
 
     public function laporan_nilai(){
-        return $this->hasMany(Tujuan_Pembelajaran_Indikator::class);
+        return $this->hasMany(Tujuan_Pembelajaran_Indikator::class,'indikator_id','id');
     }
 }

@@ -11,7 +11,7 @@ class Kompetensi_Dasar extends Model
         'nama_kompetensi'
     ];
 
-    public function jurnal_kompetensi(){
-        return $this->hasMany(Jurnal_kompetensi::class);
+    public function kompetensi(){
+        return $this->belongsTo(Kompetensi_Dasar::class,'kompetensi_dasar_id','id');
     }
 }

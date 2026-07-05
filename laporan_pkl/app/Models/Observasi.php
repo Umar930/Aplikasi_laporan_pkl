@@ -19,14 +19,15 @@ class Observasi extends Model
     ];
 
     public function murid(){
-        return $this->belongsTo(Murid::class);
+        return $this->belongsTo(Murid::class,'murid_id','id');
     }
 
     public function pembimbing(){
-        return $this->belongsTo(Guru_Pembimbing::class);
+        return $this->belongsTo(Guru_Pembimbing::class,'guru_pembimbing_id','id');
     }
 
+
     public function indikator(){
-        return $this->belongsTo(Tujuan_Pembelajaran_Indikator::class);
+        return $this->belongsTo(Tujuan_Pembelajaran_Indikator::class,'indikator_id','id');
     }
 }

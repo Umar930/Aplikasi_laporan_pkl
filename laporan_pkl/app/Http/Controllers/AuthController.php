@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Guru_Pembimbing;
 use App\Models\Identitas_Dudi;
 use App\Models\Murid;
-use App\Models\Guru_Pembimbing;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -22,7 +24,104 @@ class AuthController extends Controller
     }
 
     public function register(Request $request){
+            $request->validate([
+               'user_type'=>'required|in:web,guru,dudi,murid'
+            ]);
 
+            $type=$request->user_type;
+
+            switch($type){
+                case 'web':
+                    return $this->handleWebRegister($request);
+                case 'guru':
+                    return $this->handleGuruRegister($request);
+                case 'dudi':
+                    return $this->handleDudiRegister($request);
+                case 'murid':
+                    return $this->handleMuridRegister($request);            
+            }
+    }
+
+    protected function handleWebRegister(Request $request){
+        $data=$request->validate([
+            'name'=>'required|String|max:255',
+            'email'=>'required|String|email|max:255|unique:users',
+            'name'=>'required|String|min:8|confirmed',
+        ]);
+
+        $user=User::create([
+            'name'=>$data['name'],
+            'email'=>$data['email'],
+            'password'=>Hash::make($data['email']),
+        ]);
+
+        Auth::guard('web')->login($user);
+        return redirect('web/dashboard');
+    }
+
+    protected function handleGuruRegister(Request $request){
+        $data =$request->validate([
+            'nama'=>'required|string|max:255',
+            'nip'=>'required|string|max:20|unique:guru_pembimbings',
+            'email'=>'required|string|email|max:255|unique:guru_pembimbings',
+            'password'=>'required|string|min:8|confirmed',
+        ]);
+
+        $guru=Guru_Pembimbing::create([
+            'nama'=>$data['nama'],
+            'nip'=>$data['nip'],
+            'email'=>$data['email'],
+            'password'=>Hash::make($data['password']),
+        ]);
+
+        Auth::guard('guru')->login($guru);
+        return redirect('guru/dashboard');
+    }
+
+    protected function handleDudiRegister(Request $request){
+        $data=$request->validate([
+            'nama_dudi'=>'required|string|max:255',
+            'alamat_dudi'=>'required|string|',
+            'no_telepon'=>'required|string|',
+            'nama_pembimbing'=>'required|string|max:255',
+            'email'=>'required|string|max:255|email|unique:identitas_dudi',
+            'password'=>'required|string|min:8|confirmed',
+        ]);
+
+        $dudi=Identitas_Dudi::create([
+            'nama_dudi'=>$data['nama_dudi'],
+            'alamat_dudi'=>$data['alamat_dudi'],
+            'no_telepon'=>$data['no_telepon'],
+            'email'=>$data['email'],
+            'password'=>Hash::make($data['password']),
+        ]);
+
+        Auth::guard('dudi')->login($dudi);
+        return redirect('dudi/dashboard');
+    }
+
+    protected function handleMuridRegister(Request $request){
+        $data=$request->validate([
+            'nama'=>'required|string|max:255',
+            'kelas'=>'required|string',
+            'konsentrasi_keahlian_id'=>'required|exist:konsentrasi_keahlian,id',
+            'tempat_lahir'=>'required|string',
+            'tanggal_lahir'=>'required|date',
+            'nis'=>'required|string|unique:murid',
+            'jenis_kelamin'=>'required|in:pria,wanita',
+            'alamat_siswa'=>'required|string',
+            'alamat_wali_ortu'=>'required|string',
+            'nama_wali_ortu'=>'required|string',
+            'no_telepon'=>'required|string',
+            'no_telepon_wali'=>'required|string',
+            'dudi_id'=>'required|exists:identitas_dudi,id',
+            'guru_pembimbing_id'=>'required|exists:guru_pembimbings,id',
+        ]);
+
+        $murid=Murid::create($data);
+
+        Auth::guard('murid')->login($murid);
+        return redirect('murid/dashbaord');
     }
 
     public function login(Request $request){
@@ -69,11 +168,28 @@ class AuthController extends Controller
 
         if(Auth::guard($guard)->attempt($credentials)){
             $request->session()->regenerate();
-            return back()->inetended("/{$guard}/dashboard");
+            return back()->intended("/{$guard}/dashboard");
         }
     }
 
-    public function logout(){
-        
+    public function logout(Request $request){
+        $guards=['web','murid','dudi','murid'];
+        $activeGuard='web';
+
+        foreach($guards as $guard){
+            if(Auth::guard($guard)->check()){
+                $activeGuard=$guard;
+                break;
+            }
+        }
+
+        Auth::guard($activeGuard)->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('sukses','anda telah logout.');
     }
+
 }

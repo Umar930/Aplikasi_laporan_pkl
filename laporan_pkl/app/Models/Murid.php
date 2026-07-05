@@ -28,16 +28,30 @@ class Murid extends Authenticatable
     ];
 
     public function dudi(){
-      return $this->belongsTo(Identitas_Dudi::class);
+        return $this->belongsTo(Identitas_Dudi::class,'dudi_id','id');
     }
 
     public function pembimbing(){
-        return $this->belongsTo(Guru_Pembimbing::class);
+        return $this->belongsTo(Guru_Pembimbing::class,'guru_pembimbing_id','id');
     }
 
     public function konsentrasi_keahlian(){
-        return $this->belongsTo(Konsentrasi_Keahlian::class);
+        return $this->belongsTo(Konsentrasi_Keahlian::class,'konsentrasi_keahlian_id','id');
     }
+
+    public function laporanNilai(){
+        return $this->hasMany(laporan_nilai::class,'murid_id','id');
+    }
+
+    public function laporanHarian(){
+        return $this->hasMany(laporan_harian::class,'murid_id','id');
+    }
+
+    public function laporanBulanan(){
+        return $this->hasMany(laporan_bulanan::class,'murid_id','id');
+    }
+
+
 }
 
 

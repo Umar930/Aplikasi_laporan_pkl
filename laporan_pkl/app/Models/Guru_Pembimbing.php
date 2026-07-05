@@ -15,6 +15,6 @@ class Guru_Pembimbing extends Authenticatable
     ];
 
     public function murid(){
-        return $this->hasMany(Murid::class);
+        return $this->hasMany(Murid::class,'murid_id','id');
     }
 } 

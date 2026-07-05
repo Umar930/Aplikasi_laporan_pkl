@@ -20,10 +20,10 @@ class Jurnal_kompetensi extends Model
     ];
 
     public function murid(){
-        return $this->belongsTo(Murid::class);
+        return $this->belongsTo(Murid::class,'murid_id','id');
     }
 
     public function kompetensi(){
-        return $this->belongsTo(Kompetensi_Dasar::class);
+        return $this->belongsTo(Kompetensi_Dasar::class,'kompetensi_dasar_id','id');
     }
 }

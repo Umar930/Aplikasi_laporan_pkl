@@ -19,14 +19,14 @@ class laporan_bulanan extends Model
     ];
 
     public function murid(){
-        return $this->belongsTo(Murid::class);
+        return $this->belongsTo(Murid::class,'murid_id','id');        
     }
-
+  
     public function dudi(){
-        return $this->belongsTo(Identitas_Dudi::class);
+        return $this->belongsTo(Identitas_Dudi::class,'dudi_id','id');
     }
 
     public function pembimbing(){
-        return $this->belongsTo(Guru_Pembimbing::class);
+        return $this->belongsTo(Guru_Pembimbing::class,'guru_pembimbing_id','id');
     }
 }
