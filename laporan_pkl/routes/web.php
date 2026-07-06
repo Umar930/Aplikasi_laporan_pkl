@@ -16,10 +16,6 @@ Route::get('/register-user', function(){
     return view('auth.register-user');
 })->name('user');
 
-<<<<<<< HEAD
-
-=======
->>>>>>> eb2162114ce409f602a4fcfa5bb73dd77f38e206
 Route::get('/register-guru-pembimbing', function(){
     return view('auth.register-guru-pembimbing');
 })->name('guru-pembimbing');
@@ -62,7 +58,3 @@ Route::get('/index', function(){
     return view('index');
 });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> eb2162114ce409f602a4fcfa5bb73dd77f38e206

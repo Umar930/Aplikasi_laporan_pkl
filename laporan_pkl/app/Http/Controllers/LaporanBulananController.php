@@ -6,37 +6,37 @@ use App\Models\laporan_bulanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class BulananController extends Controller
+class LaporanBulananController extends Controller
 {
     public function index(){
         if(Auth::guard('murid')->check()){
             $murid_id=Auth::guard('murid')->id();
             $laporans=laporan_bulanan::where('murid_id',$murid_id)->latest()->get();
-            return view('laporan-bulanan.index',compact('laporans'));
         }
         if(Auth::guard('guru')->check()){
             $guruId=Auth::guard('guru')->id();
             $laporans=laporan_bulanan::whereHas('murid',function($query) use ($guruId){
                 $query->where('guru_pembimmbing_id',$guruId);
             })->with('murid')->latest()->get();
-            return view('laporan-bulanan.index',compact('laporans'));
         }
         if(Auth::guard('dudi')->check()){
             $dudiId=Auth::guard('dudi')->id();
             $laporans=laporan_bulanan::whereHas('murid',function($query) use ($dudiId){
                 $query->where('dudi_id',$dudiId);
             })->with('murid')->latest()->get();
-            return view('laporan-bulanan.index',compact('laporans'));
         }
+        return view('laporan-bulanan.index',compact('laporans'));
     }
     public function show(){
         
     }
 
-    public function create(laporan_bulanan $laporan){
+    public function create(){
         if(!Auth::guard('murid')->check() && Auth::guard('dudi')->check()){
             abort(403,'akses ditolak');
         }
+
+        $murid=Auth::guard('murid')->user();
 
         return view('laporan-bulanan.tambah');
     }
@@ -47,18 +47,18 @@ class BulananController extends Controller
         }
 
         $request->validate([
-            'dudi_id'=>'required|exist:identitas_dudi,id',
-            'guru_pembimbing'=>'required|exist:guru_pembimbings,id',
             'nama_pekerjaan'=>'required|string',
             'perencanaan_kegiatan'=>'required|string',
             'pelaksanaa_kegiatan'=>'required|string',
             
         ]);
 
+        $muridAktif=Auth::guard('murid')->user();
+
         laporan_bulanan::create([
-            'murid_id'=>Auth::guard('murid')->id(),
-            'dudi_id'=>Auth::guard('dudi')->id(),
-            'guru_pembimbing_id'=>$request->guru_pembimbing_id,
+            'murid_id'=>$muridAktif->id,
+            'dudi_id'=>$muridAktif->dudi_id,
+            'guru_pembimbing_id'=>$muridAktif->guru_pembimbing_id,
             'nama_pekerjaan'=>$request->guru_pembimbing_id,
             'perencanaan_kegiatan'=>$request->perencanaan_kegiatan,
             'pelaksanaa_kegiatan'=>$request->pelaksanaa_kegiatan,
@@ -69,30 +69,43 @@ class BulananController extends Controller
     }
 
     public function update(Request $request, laporan_bulanan $laporan){
-        if(!Auth::guard('murid') || $laporan->murid_id !== Auth::guard('murid')->id()){
-            abort(403,'akses ditolak');
+        if(!Auth::guard('dudi')->check()){
+            $request->validate([
+                'catatan_instruktur'=>'required|string'
+            ]);
         }
 
         if($laporan->status_verifikasi === 'diverifikasi'){
             return redirect()->back()->with('error','laporan sudah dikunci atau diverifikasi');
         }
 
-        $request->validate([
-            'nama_pekerjaan'=>'required|string',
-            'perencaan_kegiatan'=>'required|string',
-            'pelaksanaa_kegiatan'=>'required|string',
+        $laporan->update([
+            'catatan_instruktur'=>$request->catatan_instruktur,
+            'status_verifikasi'=>'diverifikasi',
+            'diverifikasi_oleh_dudi'=>Auth::guard('dudi')->id(),
         ]);
 
-        $laporan->update($request->all());
+        if(Auth::guard('murid')->check()){
+            if($laporan->status_verifikasi === 'diverifikasi'){
+                return redirect()->back()->with('error','laporan sudah dikunci atau diverifikasi');
+            }
+            
+            $request->validate([
+                'nama_pekerjaan'=>'required|string',
+                'perencanaan_kegiatan'=>'required|string',
+                'pelaksanaa_kegiatan'=>'required|string',
+            ]);
 
-        return redirect('laporan-bulanan.index')->with('sukses','data berhasil diubah');
+            $laporan->update($request->only([
+                'nama_pekerjaan','perencanaan_kegiatan','pelaksanaa_kegiatan'
+            ]));
+            return redirect('laporan-bulanan.index')->with('sukses','data berhasil diubah');
+        }
 
+        abort(403);
     }
     
     public function edit(laporan_bulanan $laporan){
-        if(!Auth::guard('murid')->check() || $laporan->murid_id !== Auth::guard('murid')->id()){
-            abort(403,'akses ditolak');
-        }
 
         if($laporan->status_diverifikasi === 'diverifikasi'){
             return redirect()->back()->with('error','data sudah di verifikasi atau dikunci');
