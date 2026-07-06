@@ -8,7 +8,7 @@
         <br>
         <table class="table table-hover">
             <thead>
-                <tr style="text-align:center;" class="table-warning">
+                <tr class="table-warning align-middle text-center">
                     <th>No</th>
                     <th>Nama Pekerjaan</th>
                     <th>Perencanaan Kegiatan</th>
