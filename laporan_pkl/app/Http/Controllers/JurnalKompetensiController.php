@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Jurnal_kompetensi;
 use App\Models\Kompetensi_Dasar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class JurnalKompetensiController extends Controller
 {
@@ -23,6 +25,10 @@ class JurnalKompetensiController extends Controller
      */
     public function create()
     {
+        if(!Auth::guard('guru')->check() && !Auth::guard('dudi')->check()){
+            abort(403,'akses ditolak');
+        }
+
         $jurnal_kompetensi=Jurnal_kompetensi::all();
         $dasar=Kompetensi_Dasar::all();
         return view('jurnal-kompetensi.tambah',compact('jurnal_kompetensi','dasar'));
@@ -52,6 +58,8 @@ class JurnalKompetensiController extends Controller
         ]);
 
         Jurnal_kompetensi::create($kompetensi);
+
+        return redirect('jurnal-kompetensi.index')->with('sukses','data berhasil ditambahkan');
     }
 
     /**

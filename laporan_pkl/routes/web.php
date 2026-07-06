@@ -16,7 +16,7 @@ Route::get('/register-user', function(){
     return view('auth.register-user');
 })->name('user');
 
-<<<<<<< HEAD
+
 Route::get('/register-guru-pembimbing', function(){
     return view('auth.register-guru-pembimbing');
 })->name('guru-pembimbing');
@@ -54,9 +54,9 @@ Route::get('/jurnal-kompetensi', function(){
 Route::get('/profil', function(){
     return view('profil.index');
 })->name('profil');
-=======
+
 Route::get('/index', function(){
     return view('index');
 });
 
->>>>>>> 93c54f8fec336b6505a4b2470326f8d58cc017a2
+
