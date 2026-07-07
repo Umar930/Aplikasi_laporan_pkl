@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guru_Pembimbing;
+use App\Models\Konsentrasi_Keahlian;
 use App\Models\Identitas_Dudi;
 use App\Models\Murid;
 use App\Models\User;
@@ -20,7 +21,8 @@ class AuthController extends Controller
 
     public function showregister(){
 
-        return view('auth.register');
+        $konsentrasi = Konsentrasi_Keahlian::all();
+        return view('auth.register', compact('konsentrasi'));
     }
 
     public function register(Request $request){
@@ -46,17 +48,16 @@ class AuthController extends Controller
         $data=$request->validate([
             'name'=>'required|String|max:255',
             'email'=>'required|String|email|max:255|unique:users',
-            'name'=>'required|String|min:8|confirmed',
+            'password'=>'required|String|min:8|confirmed',
         ]);
 
         $user=User::create([
             'name'=>$data['name'],
             'email'=>$data['email'],
-            'password'=>Hash::make($data['email']),
+            'password'=>Hash::make($data['password']),
         ]);
 
-        Auth::guard('web')->login($user);
-        return redirect('web/dashboard');
+        return redirect()->route('login')->with('sukses','Registrasi Admin berhasil! Silahkan login');
     }
 
     protected function handleGuruRegister(Request $request){
@@ -74,8 +75,7 @@ class AuthController extends Controller
             'password'=>Hash::make($data['password']),
         ]);
 
-        Auth::guard('guru')->login($guru);
-        return redirect('guru/dashboard');
+        return redirect()->route('login')->with('sukses','Registrasi Guru berhasil! Silahkan login');
     }
 
     protected function handleDudiRegister(Request $request){
@@ -96,13 +96,12 @@ class AuthController extends Controller
             'password'=>Hash::make($data['password']),
         ]);
 
-        Auth::guard('dudi')->login($dudi);
-        return redirect('dudi/dashboard');
+        return redirect()->route('login')->with('sukses','Registrasi Dudi berhasil! Silahkan login');
     }
 
     protected function handleMuridRegister(Request $request){
         $data=$request->validate([
-            'nama'=>'required|string|max:255',
+            'nama_murid'=>'required|string|max:255',
             'kelas'=>'required|string',
             'konsentrasi_keahlian_id'=>'required|exist:konsentrasi_keahlian,id',
             'tempat_lahir'=>'required|string',
@@ -120,8 +119,7 @@ class AuthController extends Controller
 
         $murid=Murid::create($data);
 
-        Auth::guard('murid')->login($murid);
-        return redirect('murid/dashbaord');
+        return redirect()->route('login')->with('sukses','Registrasi Murid berhasil! Silahkan login');
     }
 
     public function login(Request $request){
@@ -168,8 +166,9 @@ class AuthController extends Controller
 
         if(Auth::guard($guard)->attempt($credentials)){
             $request->session()->regenerate();
-            return back()->intended("/{$guard}/dashboard");
+            return redirect()->intended("/{$guard}/dashboard");
         }
+        return back()->withErrors(['email'=>'kredensial yang dimasukkan tidak cocok!'])->withInput();
     }
 
     public function logout(Request $request){

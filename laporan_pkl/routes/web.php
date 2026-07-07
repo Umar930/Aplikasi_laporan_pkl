@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -7,29 +8,28 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+
 // Route untuk login/register
-Route::get('/login', function(){
-    return view('auth.login');
-})->name('login');
 
-Route::get('/register-user', function(){
-    return view('auth.register-user');
-})->name('user');
+Route::get('/register', [AuthController::class, 'showregister'])->name('register');
 
-Route::get('/register-guru-pembimbing', function(){
-    return view('auth.register-guru-pembimbing');
-})->name('guru-pembimbing');
+Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/register-dudi', function(){
-    return view('auth.register-dudi');
-})->name('dudi');
+Route::get('/login', [AuthController::class, 'showlogin'])->name('login');
 
-Route::get('/register-murid', function(){
-    return view('auth.register-murid');
-})->name('murid');
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/logout', [AuthController::class, 'logout']);
+
+Route::get('web/dashboard', function() { return "Dashboard Admin";});
+Route::get('guru/dashboard', function() { return "Dashboard Guru";});
+Route::get('dudi/dashboard', function() { return "Dashboard Dudi";});
+Route::get('murid/dashboard', function() { return "Dashboard Murid";});
+
 
 
 // Route untuk halaman bagian
+
 Route::get('/laporan-bulanan', function(){
     return view('laporan-bulanan.index');
 })->name('bulanan');
