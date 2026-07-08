@@ -16,6 +16,6 @@ class Identitas_Dudi extends Authenticatable
     ];
 
     public function murid(){
-        return $this->hasMany(Murid::class,'murid_id','id');
+        return $this->hasMany(Murid::class);
     }
 }

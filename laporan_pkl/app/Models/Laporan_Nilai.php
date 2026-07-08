@@ -4,16 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class laporan_nilai extends Model
+class Laporan_Nilai extends Model
 {
     protected $fillable=[
         'murid_id',
         'nisn',
         'tanggal_mulai',
         'tanggal_berakhir',
-        'indikator_id',
-        'skor',
-        'deskripsi',
         'catatan',
         'kehadiran_sakit',
         'kehadiran_ijin',
@@ -24,7 +21,7 @@ class laporan_nilai extends Model
         return $this->belongsTo(Murid::class,'murid_id','id');        
     }
 
-    public function indikator(){
-        return $this->belongsTo(Tujuan_Pembelajaran_Indikator::class,'indikator_id','id');
+    public function nilai_details(){
+        return $this->hasMany(Laporan_nilai_details::class,'laporan_nilai_id','id');
     }
 }

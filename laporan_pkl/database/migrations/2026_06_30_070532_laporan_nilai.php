@@ -16,14 +16,20 @@ return new class extends Migration
             $table->foreignId('murid_id')->constrained('murid')->onDelete('cascade');
             $table->integer('nisn');
             $table->date('tanggal_mulai');
-            $table->date('tanggal_berkahir');
-            $table->foreignId('indikator_id')->constrained('tujuan_pembelajaran_indikator')->onDelete('cascade');
-            $table->integer('skor');
-            $table->string('deskripsi')->nullable();
+            $table->date('tanggal_berakhir');
             $table->string('catatan')->nullable();
-            $table->integer('kehadiran_sakit');
-            $table->integer('kehadiran_ijin');
-            $table->integer('kehadiran_tanpa_keterangan');
+            $table->integer('kehadiran_sakit')->default('0');
+            $table->integer('kehadiran_ijin')->default('0');
+            $table->integer('kehadiran_tanpa_keterangan')->default('0');
+            $table->timestamps();
+        });
+
+        Schema::create('laporan_nilai_details',function(Blueprint $table){
+            $table->id();
+            $table->foreignId('laporan_nilai_id')->constrained('laporan_nilais')->onDelete('cascade');
+            $table->foreignId('indikator_id')->constrained('Tujuan_Pembelajaran_indikator')->onDelete('cascade');
+            $table->Integer('skor');
+            $table->string('deskripsi');
             $table->timestamps();
         });
     }
@@ -34,5 +40,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExist('laporan_nilais');
+        Schema::dropIfExist('laporan_nilai_details');
     }
 };

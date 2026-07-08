@@ -14,6 +14,12 @@ return new class extends Migration
         Schema::create('jurnal_kompetensi', function(Blueprint $table){
             $table->id();
             $table->foreignId('murid_id')->constrained('murid')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        Schema::create('details_jurnal',function(Blueprint $table){
+            $table->id();
+            $table->foreignId('jurnal_kompetensi_id')->constrained('jurnal_kompetensi')->onDelete('cascade');
             $table->foreignId('kompetensi_dasar_id')->constrained('kompetensi_dasars')->onDelete('cascade');
             $table->enum('pelaksanaan_pembelajaran',['Sekolah','Dunia Kerja','Sekolah Dan Dunia Kerja'])->default('Sekolah Dan Dunia Kerja');
             $table->integer('nilai_minimal_kompetensi');
@@ -27,11 +33,10 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::dropIfExists('jurnal_kompetensi');
+        Schema::dropIfExists('details_jurnal');
     }
 };

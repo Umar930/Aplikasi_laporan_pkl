@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Laporan_nilai_details;
 
 class Tujuan_Pembelajaran_Indikator extends Model
 {
@@ -13,6 +14,10 @@ class Tujuan_Pembelajaran_Indikator extends Model
     ];
 
     public function laporan_nilai(){
-        return $this->hasMany(Tujuan_Pembelajaran_Indikator::class,'indikator_id','id');
+        return $this->hasMany(Laporan_nilai_details::class);
+    }
+
+    public function observasi_details(){
+        return $this->hasMany(Observasi::class);
     }
 }

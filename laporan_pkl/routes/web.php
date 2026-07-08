@@ -35,7 +35,7 @@ Route::get('/laporan-bulanan', function(){
 })->name('bulanan');
 
 Route::get('/observasi', function(){
-    return view('observasi.index');
+     return view('observasi.index');
 })->name('observasi');
 
 Route::get('/laporan-nilai', function(){

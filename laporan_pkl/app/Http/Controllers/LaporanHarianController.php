@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\laporan_harian;
-use App\Models\laporan_nilai;
+use App\Models\Laporan_Harian;
+use App\Models\Laporan_Nilai;
 use App\Models\Murid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,33 +13,33 @@ class HarianController extends Controller
     public function index(){
         if(Auth::guard('murid')->check()){
             $murid_id=Auth::guard('murid')->id();
-            $laporans=laporan_harian::where('murid_id',$murid_id)->latest()->get();
+            $laporans=Laporan_Harian::where('murid_id',$murid_id)->latest()->get();
             return view('laporan-harian.index',compact('laporans'));
         }
         if(Auth::guard('guru')->check()){
             $guruId=Auth::guard('guru')->id();
-            $laporans=laporan_harian::whereHas('murid',function($query) use ($guruId){
+            $laporans=Laporan_Harian::whereHas('murid',function($query) use ($guruId){
             $query->where('guru_pembimbing_id',$guruId);
             })->with('murid')->latest()->get();
             return view('laporan-harian.index',compact('laporans'));
         }
         if(Auth::guard('dudi')->check()){
             $dudiId=Auth::guard('dudi')->id();
-            $laporans=laporan_harian::whereHas('murid',function($query) use ($dudiId){
+            $laporans=Laporan_Harian::whereHas('murid',function($query) use ($dudiId){
             $query->where('dudi_id',$dudiId);
             })->with('murid')->latest()->get();
             return view('laporan-harian.index',compact('laporans'));
         }
 
         if(Auth::guard('web')->check()){
-            $laporans=laporan_harian::with(['murid','dudi','guru'])->latest()->get();
+            $laporans=Laporan_Harian::with(['murid','dudi','guru'])->latest()->get();
             return view('laporan-harian.index',compact('laporans'));
         }
 
         abort(403,'akses ditolak');
     }
     
-    public function edit(laporan_harian $laporan){
+    public function edit(Laporan_Harian $laporan){
         if(!Auth::guard('murid')->check() || $laporan->murid_id !== Auth::guard('murid')->id()){
             abort(403);
         }
@@ -70,7 +70,7 @@ class HarianController extends Controller
             'nilai_karakter_budaya'=>'required|string',
         ]);
 
-        laporan_harian::create([
+        Laporan_Harian::create([
             'murid_id' => Auth::guard('murid')->id(),
             'tanggal_hari'=>$request->tanggal_hari,
             'kompetensi_dasar'=>$request->kompetensi_dasar,
@@ -85,7 +85,7 @@ class HarianController extends Controller
 
     }
     
-    public function update(Request $request,laporan_harian $laporan){
+    public function update(Request $request,Laporan_Harian $laporan){
 
         if(!Auth::guard('murid')->check() || $laporan->murid_id !== Auth::guard('murid')->id()){
             abort(403);
@@ -107,7 +107,7 @@ class HarianController extends Controller
         return redirect('laporan-harian.index')->with('sukses','data berhasil diubah');
     }
     
-    public function delete(laporan_harian $laporan){
+    public function delete(Laporan_Harian $laporan){
         if(!Auth::guard('murid')->check() || $laporan->murid_id !== Auth::guard('murid')->id()){
             abort(403);
         }
@@ -121,7 +121,7 @@ class HarianController extends Controller
     }
 
     public function verifikasi(Request $request,$id){
-        $laporan=laporan_harian::findOrFail($id);
+        $laporan=Laporan_Harian::findOrFail($id);
 
         if(Auth::guard('guru')->check()){
             $laporan->diverifikasi_oleh_guru=Auth::guard('guru')->id();

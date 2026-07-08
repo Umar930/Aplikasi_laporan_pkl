@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\laporan_bulanan;
+use App\Models\Laporan_Bulanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,17 +11,17 @@ class LaporanBulananController extends Controller
     public function index(){
         if(Auth::guard('murid')->check()){
             $murid_id=Auth::guard('murid')->id();
-            $laporans=laporan_bulanan::where('murid_id',$murid_id)->latest()->get();
+            $laporans=Laporan_Bulanan::where('murid_id',$murid_id)->latest()->get();
         }
         if(Auth::guard('guru')->check()){
             $guruId=Auth::guard('guru')->id();
-            $laporans=laporan_bulanan::whereHas('murid',function($query) use ($guruId){
+            $laporans=Laporan_Bulanan::whereHas('murid',function($query) use ($guruId){
                 $query->where('guru_pembimmbing_id',$guruId);
             })->with('murid')->latest()->get();
         }
         if(Auth::guard('dudi')->check()){
             $dudiId=Auth::guard('dudi')->id();
-            $laporans=laporan_bulanan::whereHas('murid',function($query) use ($dudiId){
+            $laporans=Laporan_Bulanan::whereHas('murid',function($query) use ($dudiId){
                 $query->where('dudi_id',$dudiId);
             })->with('murid')->latest()->get();
         }
@@ -55,7 +55,7 @@ class LaporanBulananController extends Controller
 
         $muridAktif=Auth::guard('murid')->user();
 
-        laporan_bulanan::create([
+        Laporan_Bulanan::create([
             'murid_id'=>$muridAktif->id,
             'dudi_id'=>$muridAktif->dudi_id,
             'guru_pembimbing_id'=>$muridAktif->guru_pembimbing_id,
@@ -68,7 +68,7 @@ class LaporanBulananController extends Controller
         return redirect('laporan-bulanan.index')->with('sukses','data berhasil ditambahkan');
     }
 
-    public function update(Request $request, laporan_bulanan $laporan){
+    public function update(Request $request,Laporan_Bulanan $laporan){
         if(!Auth::guard('dudi')->check()){
             $request->validate([
                 'catatan_instruktur'=>'required|string'
@@ -105,7 +105,7 @@ class LaporanBulananController extends Controller
         abort(403);
     }
     
-    public function edit(laporan_bulanan $laporan){
+    public function edit(Laporan_Bulanan $laporan){
 
         if($laporan->status_diverifikasi === 'diverifikasi'){
             return redirect()->back()->with('error','data sudah di verifikasi atau dikunci');
@@ -113,7 +113,7 @@ class LaporanBulananController extends Controller
 
         return view('laporan-bulanan.edit');
     }
-    public function delete(laporan_bulanan $laporan){
+    public function delete(Laporan_Bulanan $laporan){
         if(!Auth::guard('murid')->check() || $laporan->murid_id !== Auth::guard('murid')->id()){
             abort(403,'akses ditolak');
         }
@@ -128,7 +128,7 @@ class LaporanBulananController extends Controller
     }
 
     public function verifikasi(Request $request,$id){
-        $laporan=laporan_bulanan::findOrFail($id);
+        $laporan=Laporan_Bulanan::findOrFail($id);
 
         if(Auth::guard('dudi')->check()){
             $laporan->diverifikasi_oleh_dudi=Auth::guard('dudi')->id();

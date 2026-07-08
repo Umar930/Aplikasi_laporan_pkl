@@ -40,15 +40,19 @@ class Murid extends Authenticatable
     }
 
     public function laporanNilai(){
-        return $this->hasMany(laporan_nilai::class,'murid_id','id');
+        return $this->hasMany(laporan_nilai::class);
     }
 
     public function laporanHarian(){
-        return $this->hasMany(laporan_harian::class,'murid_id','id');
+        return $this->hasMany(laporan_harian::class);
     }
 
     public function laporanBulanan(){
-        return $this->hasMany(laporan_bulanan::class,'murid_id','id');
+        return $this->hasMany(laporan_bulanan::class);
+    }
+
+    public function observasi(){
+        return $this->hasMany(Observasi::class);
     }
 
 

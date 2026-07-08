@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kompetensi_Dasar extends Model
 {
+    protected $table='kompetensi_dasars';
     protected $fillable=[
         'kategori_utama',
         'nama_kompetensi'
     ];
 
     public function kompetensi(){
-        return $this->belongsTo(Kompetensi_Dasar::class,'kompetensi_dasar_id','id');
+        return $this->hasMany(JurnalDetail::class);
     }
 }

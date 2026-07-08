@@ -26,8 +26,8 @@ class Observasi extends Model
         return $this->belongsTo(Guru_Pembimbing::class,'guru_pembimbing_id','id');
     }
 
-
-    public function indikator(){
-        return $this->belongsTo(Tujuan_Pembelajaran_Indikator::class,'indikator_id','id');
+    public function details(){
+        return $this->hasMany(Observasi_details::class);
     }
+
 }
