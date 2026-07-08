@@ -4,57 +4,83 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
-Route::get('/', function () {
+Route::get('/', function(){
     return view('welcome');
 })->name('home');
 
 
 // Route untuk login/register
 
-Route::get('/register', [AuthController::class, 'showregister'])->name('register');
+Route::middleware('guest')->group(function (){
+    
+});
 
 Route::post('/register', [AuthController::class, 'register']);
-
-Route::get('/login', [AuthController::class, 'showlogin'])->name('login');
-
 Route::post('/login', [AuthController::class, 'login']);
-
-Route::post('/logout', [AuthController::class, 'logout']);
-
-Route::get('web/dashboard', function() { return "Dashboard Admin";});
-Route::get('guru/dashboard', function() { return "Dashboard Guru";});
-Route::get('dudi/dashboard', function() { return "Dashboard Dudi";});
-Route::get('murid/dashboard', function() { return "Dashboard Murid";});
+Route::get('/register', [AuthController::class, 'showregister'])->name('register');
+Route::get('/login', [AuthController::class, 'showlogin'])->name('login');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 
 // Route untuk halaman bagian
 
+
 Route::get('/laporan-bulanan', function(){
     return view('laporan-bulanan.index');
-})->name('bulanan');
-
+    })->name('bulanan');
 Route::get('/observasi', function(){
-    return view('observasi.index');
-})->name('observasi');
-
+        return view('observasi.index');
+    })->name('observasi');
 Route::get('/laporan-nilai', function(){
     return view('laporan-nilai.index');
-})->name('nilai');
-
+    })->name('nilai');
 Route::get('/laporan-harian', function(){
     return view('laporan-harian.index');
-})->name('harian');
-
+    })->name('harian');
 Route::get('/jurnal-kompetensi', function(){
     return view('jurnal-kompetensi.index');
-})->name('kompetensi');
-
+    })->name('kompetensi');
 Route::get('/profil', function(){
     return view('profil.index');
-})->name('profil');
+    })->name('profil');
 
-Route::get('/index', function(){
-    return view('index');
+// Route::middleware(['auth:murid,guru,dudi,web', 'redirect.role'])->get('/', function() {
+//     return view('welcome');
+// });
+
+Route::middleware(['auth:murid'])->prefix('murid')->name('murid.')->group(function (){
+    Route::get('/laporan-harian', function(){
+    return view('laporan-harian.index');
+    })->name('harian');
+
+    Route::get('/laporan-bulanan', function(){
+    return view('laporan-bulanan.index');
+    })->name('bulanan');
+
+    Route::get('/jurnal-kompetensi', function(){
+    return view('jurnal-kompetensi.index');
+    })->name('kompetensi');
+
+    Route::get('/profil', function(){
+    return view('profil.index');
+    })->name('profil');
 });
 
+Route::middleware(['auth:dudi'])->prefix('dudi')->name('dudi.')->group(function (){
+    Route::get('/laporan-nilai', function(){
+    return view('laporan-nilai.index');
+    })->name('nilai');
+});
+
+Route::middleware(['auth:guru'])->prefix('guru')->name('guru.')->group(function () {
+    Route::get('/jurnal-kompetensi', function(){
+    return view('jurnal-kompetensi.index');
+    })->name('kompetensi');
+});
+
+Route::middleware(['auth:web'])->prefix('web')->name('web.')->group(function (){
+    Route::get('/observasi', function(){
+        return view('observasi.index');
+    })->name('observasi');
+});

@@ -13,7 +13,7 @@ class Murid extends Authenticatable
         'kelas',
         'konsentrasi_keahlian_id',
         'tempat_lahir',
-        'tanggal_hari',
+        'tanggal_lahir',
         'nis',
         'jenis_kelamin',
         'alamat_siswa',

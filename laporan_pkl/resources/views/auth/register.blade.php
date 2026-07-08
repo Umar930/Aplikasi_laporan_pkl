@@ -56,7 +56,11 @@
                             </div>
 
                             <div class="mb-3 data-field" data-user="guru">
-                                <label for="nip" class="form-label fw-bold">Nama Guru</label>
+                                <label for="nama" class="form-label fw-bold">Nama Guru</label>
+                                <input type="text" name="nama" id="nama" value="{{ old('nama') }}" class="form-control">
+                            </div>
+                            <div class="mb-3 data-field" data-user="guru">
+                                <label for="nip" class="form-label fw-bold">NIP</label>
                                 <input type="text" name="nip" id="nip" value="{{ old('nip') }}" class="form-control">
                             </div>
 
@@ -69,13 +73,17 @@
                                 <textarea type="text" name="alamat_dudi" id="alamat_dudi" rows="2" class="form-control">{{ old('alamat_dudi') }}</textarea>
                             </div>
                             <div class="mb-3 data-field" data-user="dudi">
-                                <label for="nama_pembimbing" class="form-label fw-bold">Nama Guru Pembimbing</label>
+                                <label for="no_telepon" id="no_telepon" class="form-label fw-bold">No Telepon DUDI</label>
+                                <input class="form-control" type="text" name="no_telepon" id="no_telepon" value="{{ old('no_telepon') }}">
+                            </div>
+                            <div class="mb-3 data-field" data-user="dudi">
+                                <label for="nama_pembimbing" class="form-label fw-bold">Nama Pembimbing</label>
                                 <input type="text" name="nama_pembimbing" id="nama_pembimbing" value="{{ old('nama_pembimbing') }}" class="form-control">
                             </div>
 
                             <div class="mb-3 data-field" data-user="web guru dudi">
                                 <label for="email" class="form-label fw-bold">Email</label>
-                                <input type="text" name="email" id="email" value="{{ old('email') }}" class="form-control" placeholder="Masukkan Email">
+                                <input type="email" name="email" id="email" value="{{ old('email') }}" class="form-control" placeholder="Masukkan Email">
                             </div>
                             <div class="row data-field" data-user="web guru dudi">
                                 <div class="col-md-6 mb-3">
@@ -163,7 +171,7 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="guru_pembimbing_id" class="form-label fw-bold">Nama Guru Pembimbing</label>
+                                    <label for="guru_pembimbing_id" class="form-label fw-bold">Nama Pembimbing</label>
                                     <select name="guru_pembimbing_id" id="guru_pembimbing_id" class="form-select">
                                         <option value="">-- Pilih Guru Pembimbing --</option>
                                         @foreach(\App\Models\Guru_Pembimbing::all() as $guru)

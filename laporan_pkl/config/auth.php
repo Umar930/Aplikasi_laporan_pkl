@@ -89,7 +89,7 @@ return [
             'driver'=>'eloquent',
             'model'=> App\Models\Identitas_Dudi::class,
         ],
-        'gurus'=>[
+        'murids'=>[
             'driver'=>'eloquent',
             'model'=> App\Models\Murid::class,
         ],
