@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Kompetensi_Dasar;
+use App\Models\Tujuan_Pembelajaran_Indikator;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -24,6 +26,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             KonsentrasiKeahlian::class,
+            kompetensiSeeder::class,
+            indikatorSeeder::class,
         ]);
     }
 }
