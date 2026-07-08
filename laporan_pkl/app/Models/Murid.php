@@ -9,11 +9,11 @@ class Murid extends Authenticatable
 {
     protected $table='murid';
     protected $fillable=[
-        'nama',
+        'nama_murid',
         'kelas',
         'konsentrasi_keahlian_id',
         'tempat_lahir',
-        'tanggal_hari',
+        'tanggal_lahir',
         'nis',
         'jenis_kelamin',
         'alamat_siswa',

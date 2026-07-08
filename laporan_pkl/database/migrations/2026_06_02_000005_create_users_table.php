@@ -46,7 +46,7 @@ return new class extends Migration
             $table->string('kelas');
             $table->foreignId('konsentrasi_keahlian_id')->constrained('konsentrasi_keahlian')->onDelete('cascade');
             $table->string('tempat_lahir');
-            $table->date('tanggal_hari');
+            $table->date('tanggal_lahir');
             $table->string('nis');
             $table->enum('jenis_kelamin',['pria','wanita'])->default('pria');
             $table->string('alamat_siswa');

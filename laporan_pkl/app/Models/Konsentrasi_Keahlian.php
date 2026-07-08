@@ -13,6 +13,6 @@ class Konsentrasi_Keahlian extends Model
     ];
 
     public function murid(){
-        return $this->hasMany(Murid::class,'murid_id','id');
+        return $this->hasMany(Murid::class,'konsentrasi_keahlian_id','id');
     }
 }

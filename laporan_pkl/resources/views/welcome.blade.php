@@ -45,7 +45,7 @@
 <body>
     <h1>Welcome</h1>
     <div class="container">
-        <a href="{{ route('user') }}"><button>Register</button></a>
+        <a href="{{ route('register') }}"><button>Register</button></a>
         <p>Sudah punya akun?</p>
         <a href="{{ route('login') }}"><button>Login</button></a>
     </div>

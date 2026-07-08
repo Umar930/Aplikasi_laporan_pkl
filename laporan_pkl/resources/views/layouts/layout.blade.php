@@ -46,24 +46,26 @@
         </a>
         <hr class="text-secondary">
         <ul class="nav nav-pills flex-column mb-auto gap-1">
-            <li class="nav-item">
-                <a href="{{ route('bulanan') }}" class="nav-link {{ request()->is('laporan-bulanan') ? 'active' : '' }}">
-                    <i class="bi bi-journals me-2"></i> Laporan Bulanan
-                </a>
-            </li>
+            
+            @auth('web')
             <li>
+                <span class="fs-5 fw-bold text-secondary">Dashboard Admin</span>
                 <a href="{{ route('observasi') }}" class="nav-link {{ request()->is('observasi') ? 'active' : '' }}">
                     <i class="bi bi-box-seam me-2"></i> Observasi
                 </a>
             </li>
+            @endauth
+
+            @auth('murid')
             <li>
-                <a href="{{ route('nilai') }}" class="nav-link {{ request()->is('laporan-nilai') ? 'active' : '' }}">
-                    <i class="bi bi-calculator me-2"></i> Laporan Nilai
-                </a>
-            </li>
-            <li>
+                <span class="fs-5 fw-bold text-secondary">Dashboard Murid</span>
                 <a href="{{ route('harian') }}" class="nav-link {{ request()->is('laporan-harian') ? 'active' : '' }}">
                     <i class="bi bi-clipboard-fill me-2"></i> Laporan Harian
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('bulanan') }}" class="nav-link {{ request()->is('laporan-bulanan') ? 'active' : '' }}">
+                    <i class="bi bi-journals me-2"></i> Laporan Bulanan
                 </a>
             </li>
             <li>
@@ -76,6 +78,35 @@
                     <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
+            @endauth
+
+            @auth('guru')
+            <li>
+                <span class="fs-5 fw-bold text-secondary">Dashboard Guru</span>
+                <a href="{{ route('kompetensi') }}" class="nav-link {{ request()->is('jurnal-kompetensi') ? 'active' : '' }}">
+                    <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('nilai') }}" class="nav-link {{ request()->is('laporan-nilai') ? 'active' : '' }}">
+                    <i class="bi bi-calculator me-2"></i> Laporan Nilai
+                </a>
+            </li>
+            @endauth
+
+            @auth('dudi')
+            <li>
+                <span class="fs-5 fw-bold text-secondary">Dashboard Dudi</span>
+                <a href="{{ route('nilai') }}" class="nav-link {{ request()->is('laporan-nilai') ? 'active' : '' }}">
+                    <i class="bi bi-calculator me-2"></i> Laporan Nilai
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('kompetensi') }}" class="nav-link {{ request()->is('jurnal-kompetensi') ? 'active' : '' }}">
+                    <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
+                </a>
+            </li>
+            @endauth
         </ul>
     </div>
 
@@ -86,16 +117,26 @@
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-person-circle fs-4 me-2 text-secondary"></i>
-                    <span class="fw-bold">User</span>
+                    <span class="fw-bold">
+                        @if (Auth::guard('murid')->check())
+                            {{ Auth::guard('murid')->user()->nama_murid }}
+                        @elseif (Auth::guard('guru')->check())
+                            {{ Auth::guard('guru')->user()->nama }}
+                        @elseif (Auth::guard('dudi')->check())
+                            {{ Auth::guard('dudi')->user()->nama_dudi }}
+                        @elseif (Auth::guard('web')->check())
+                            {{ Auth::guard('web')->user()->name }}
+                        @endif
+                    </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="dropdownUser">
                     <li>
-                        <a class="dropdown-menu-item dropdown-item text-danger" href="{{ route('home') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <a class="dropdown-menu-item dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="bi bi-box-arrow-right me-2"></i> Logout
                         </a>
                     </li>
 
-                    <form id="logout-form" action="{{ route('home') }}" method="get" class="d-none">
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf
                     </form>
                 </ul>

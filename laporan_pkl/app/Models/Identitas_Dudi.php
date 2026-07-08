@@ -13,6 +13,8 @@ class Identitas_Dudi extends Authenticatable
         'alamat_dudi',
         'no_telepon',
         'nama_pembimbing',
+        'email',
+        'password',
     ];
 
     public function murid(){
