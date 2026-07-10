@@ -14,7 +14,9 @@
                     <th rowspan="2">Skor</th>
                     <th rowspan="2">Deskripsi</th>
                     <th class="table-secondary" colspan="3">Kehadiran</th>
+                    @unless(Auth::guard('murid')->check())
                     <th rowspan="2">Aksi</th>
+                    @endunless
                 </tr>
                 <tr class="table-secondary align-middle text-center">
                     <th>Sakit</th>
@@ -23,19 +25,28 @@
                 </tr>
             </thead>
             <tbody>
+                @php $no = 1; @endphp
+                @forelse($tujuan_pembelajaran as $point_utama => $item)
                 <tr class="text-center">
-                    <td>#</td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td style="text-align:center;">
-                        <a href="#"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
-                        <a href="#"><button class="btn btn-danger"><i class="bi bi-trash-fill me-2"></i>Hapus</button></a>
+                    <td>{{ $no++ }}</td>
+                    <td>{{ $point_utama }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <div class="d-flex">
+                            <a href="#"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
+                            <a href="#"><button class="btn btn-danger"><i class="bi bi-trash-fill me-2"></i>Hapus</button></a>
+                        </div>
                     </td>
                 </tr>
+                @empty
+                <tr>
+                    <td collspan="9" class="text-center align-middle fw-bold">Belum ada data</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
         <h4 class="fw-bold me-auto ms-3">Kriteria Penilaian:</h4>

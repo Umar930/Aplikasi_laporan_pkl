@@ -13,7 +13,9 @@
                     <th>Nama Pekerjaan</th>
                     <th>Perencanaan Kegiatan</th>
                     <th>Pelaksanaan Kegiatan</th>
+                    @unless(Auth::guard('murid')->check())
                     <th>Catatan Instruktur</th>
+                    @endunless
                     <th>Status Verifikasi</th>
                     <th>Aksi</th>
                 </tr>
@@ -24,7 +26,9 @@
                     <td></td>
                     <td></td>
                     <td></td>
+                    @unless(Auth::guard('murid')->check())
                     <td></td>
+                    @endunless
                     <td></td>
                     <td>
                         <a href="#"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>

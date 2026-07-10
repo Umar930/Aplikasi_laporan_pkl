@@ -41,24 +41,39 @@
 <body>
     <div class="sidebar d-flex flex-column p-3" >
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <i class="bi bi-journal-text fs-1 me-3 text-primary"></i>
+            <i class="bi bi-journal-text fs-1 me-3 text-warning"></i>
             <span class="fs-4 fw-bold">Aplikasi Laporan PKL</span>
         </a>
-        <hr class="text-secondary">
+        <hr class="text-light">
         <ul class="nav nav-pills flex-column mb-auto gap-1">
             
             @auth('web')
             <li>
-                <span class="fs-5 fw-bold text-secondary">Dashboard Admin</span>
-                <a href="{{ route('observasi') }}" class="nav-link {{ request()->is('observasi') ? 'active' : '' }}">
+                <p class=" mb-2 fs-5 fw-bold text-secondary">Dashboard Admin</p>
+                <a href="{{ route('web.observasi') }}" class="nav-link {{ request()->routeIs('web.observasi') ? 'active' : '' }}">
                     <i class="bi bi-box-seam me-2"></i> Observasi
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('web.nilai') }}" class="nav-link {{ request()->routeIs('web.nilai') ? 'active' : '' }}">
+                    <i class="bi bi-calculator me-2"></i> Laporan Nilai
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('web.kompetensi') }}" class="nav-link {{ request()->routeIs('web.kompetensi') ? 'active' : '' }}">
+                    <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                    <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
             @endauth
 
             @auth('murid')
             <li>
-                <span class="fs-5 fw-bold text-secondary">Dashboard Murid</span>
+                <p class="mb-2 fs-4 fw-bold text-secondary">Dashboard Murid</p>
                 <a href="{{ route('harian') }}" class="nav-link {{ request()->is('laporan-harian') ? 'active' : '' }}">
                     <i class="bi bi-clipboard-fill me-2"></i> Laporan Harian
                 </a>
@@ -69,7 +84,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('kompetensi') }}" class="nav-link {{ request()->is('jurnal-kompetensi') ? 'active' : '' }}">
+                <a href="{{ route('murid.kompetensi') }}" class="nav-link {{ request()->routeIs('murid.kompetensi') ? 'active' : '' }}">
                     <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
                 </a>
             </li>
@@ -82,28 +97,48 @@
 
             @auth('guru')
             <li>
-                <span class="fs-5 fw-bold text-secondary">Dashboard Guru</span>
-                <a href="{{ route('kompetensi') }}" class="nav-link {{ request()->is('jurnal-kompetensi') ? 'active' : '' }}">
+                <p class="mb-2 fs-4 fw-bold text-secondary">Dashboard Guru</p>
+                <a href="{{ route('guru.kompetensi') }}" class="nav-link {{ request()->routeIs('guru.kompetensi') ? 'active' : '' }}">
                     <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
                 </a>
             </li>
             <li>
-                <a href="{{ route('nilai') }}" class="nav-link {{ request()->is('laporan-nilai') ? 'active' : '' }}">
+                <a href="{{ route('guru.nilai') }}" class="nav-link {{ request()->routeIs('guru.nilai') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('guru.observasi') }}" class="nav-link {{ request()->routeIs('guru.observasi') ? 'active' : '' }}">
+                    <i class="bi bi-box-seam me-2"></i> Observasi
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                    <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
             @endauth
 
             @auth('dudi')
             <li>
-                <span class="fs-5 fw-bold text-secondary">Dashboard Dudi</span>
-                <a href="{{ route('nilai') }}" class="nav-link {{ request()->is('laporan-nilai') ? 'active' : '' }}">
+                <p class=" mb-2 fs-4 fw-bold text-secondary">Dashboard Dudi</p>
+                <a href="{{ route('dudi.nilai') }}" class="nav-link {{ request()->routeIs('dudi.nilai') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
                 </a>
             </li>
             <li>
-                <a href="{{ route('kompetensi') }}" class="nav-link {{ request()->is('jurnal-kompetensi') ? 'active' : '' }}">
+                <a href="{{ route('dudi.kompetensi') }}" class="nav-link {{ request()->routeIs('dudi.kompetensi') ? 'active' : '' }}">
                     <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('dudi.observasi') }}" class="nav-link {{ request()->routeIs('dudi.observasi') ? 'active' : '' }}">
+                    <i class="bi bi-box-seam me-2"></i> Observasi
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                    <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
             @endauth

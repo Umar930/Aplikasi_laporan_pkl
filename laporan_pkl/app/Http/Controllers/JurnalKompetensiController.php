@@ -110,7 +110,6 @@ class JurnalKompetensiController extends Controller
         $jurnal=Jurnal_kompetensi::create([
             'murid_id'=>$request->murid_id
         ]);
-
         $jurnal->details()->delete();
 
         foreach($request->kompetensi as $kompetensi_id=>$data){

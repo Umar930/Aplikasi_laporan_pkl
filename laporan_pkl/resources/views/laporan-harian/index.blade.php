@@ -27,8 +27,10 @@
                     <td></td>
                     <td></td>
                     <td>
-                        <a href="#"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
+                        <div class="d-flex">
+                            <a href="#"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
                         <a href="#"><button class="btn btn-danger"><i class="bi bi-trash-fill me-2"></i>Hapus</button></a>
+                        </div>
                     </td>
                 </tr>
             </tbody>
