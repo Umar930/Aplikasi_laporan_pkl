@@ -138,4 +138,4 @@ class HarianController extends Controller
 
         return redirect()->route('laporan-harian.index')->with('sukses','data telah berhasil diverifikasi');
     }
-}
+} 
