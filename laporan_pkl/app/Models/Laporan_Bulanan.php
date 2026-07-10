@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Murid;
+use App\Models\Identitas_Dudi;
+use App\Models\Guru_Pembimbing;
 
 class Laporan_Bulanan extends Model
 {

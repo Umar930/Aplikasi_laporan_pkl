@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use APP\Models\Jurnal_Kompetensi;
+use APP\Models\Kompetensi_Dasar;
 
 class JurnalDetail extends Model
 {

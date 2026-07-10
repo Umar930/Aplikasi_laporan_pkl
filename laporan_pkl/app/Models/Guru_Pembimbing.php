@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 // use Illuminate\Database\Eloquent\Model;
+use App\Models\Murid;
 
 class Guru_Pembimbing extends Authenticatable
 {
@@ -15,7 +16,7 @@ class Guru_Pembimbing extends Authenticatable
         'email',
         'password',
     ];
-
+ 
     public function murid(){
         return $this->hasMany(Murid::class);
     }

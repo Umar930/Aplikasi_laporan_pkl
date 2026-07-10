@@ -4,6 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Guru_Pembimbing;
+use App\Models\Identitas_Dudi;
+use App\Models\Konsentrasi_Keahlian;
+use App\Models\Laporan_Harian;
+use App\Models\Laporan_Bulanan;
+use App\Models\Laporan_Nilai;
+use App\Models\Observasi;
 
 class Murid extends Authenticatable
 {
@@ -40,15 +47,15 @@ class Murid extends Authenticatable
     }
 
     public function laporanNilai(){
-        return $this->hasMany(laporan_nilai::class);
+        return $this->hasMany(Laporan_Nilai::class);
     }
 
     public function laporanHarian(){
-        return $this->hasMany(laporan_harian::class);
+        return $this->hasMany(Laporan_Harian::class);
     }
 
     public function laporanBulanan(){
-        return $this->hasMany(laporan_bulanan::class);
+        return $this->hasMany(Laporan_Bulanan::class);
     }
 
     public function observasi(){

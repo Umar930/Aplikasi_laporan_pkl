@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 // use Illuminate\Database\Eloquent\Model;
+use App\Models\Murid;
 
 class Identitas_Dudi extends Authenticatable
 {

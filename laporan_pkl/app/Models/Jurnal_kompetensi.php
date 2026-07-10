@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\JurnalDetail;
+use App\Models\Murid;
 
 class Jurnal_Kompetensi extends Model
 {

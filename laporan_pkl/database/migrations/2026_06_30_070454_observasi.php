@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreignId('observasi_id')->constrained('observasi')->onDelete('cascade');
             $table->foreignId('indikator_id')->constrained('tujuan_pembelajaran_indikator')->onDelete('cascade');
             $table->enum('ketercapaian',['iya','tidak'])->default('iya');
-            $table->string('deskripsi');
+            $table->string('deskripsi')->nullable();
             $table->timestamps();
        });
     }
