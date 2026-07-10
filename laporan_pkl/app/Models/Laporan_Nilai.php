@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Murid;
+use App\Models\Laporan_nilai_details;
 
 class Laporan_Nilai extends Model
 {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Laporan_nilai_details;
+use App\Models\Observasi_details;
 
 class Tujuan_Pembelajaran_Indikator extends Model
 {
@@ -18,6 +19,6 @@ class Tujuan_Pembelajaran_Indikator extends Model
     }
 
     public function observasi_details(){
-        return $this->hasMany(Observasi::class);
+         return $this->hasMany(Observasi_details::class);
     }
-}
+} 

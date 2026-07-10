@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Observasi_details;
+use App\Models\Murid;
+use App\Models\Guru_Pembimbing;
 
 class Observasi extends Model
 {

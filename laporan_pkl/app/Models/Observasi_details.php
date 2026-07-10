@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Observasi;
+use App\Models\Tujuan_Pembelajaran_Indikator;
 
 class Observasi_details extends Model
 {

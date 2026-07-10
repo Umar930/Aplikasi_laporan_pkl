@@ -29,7 +29,7 @@ return new class extends Migration
             $table->foreignId('laporan_nilai_id')->constrained('laporan_nilais')->onDelete('cascade');
             $table->foreignId('indikator_id')->constrained('Tujuan_Pembelajaran_indikator')->onDelete('cascade');
             $table->Integer('skor');
-            $table->string('deskripsi');
+            $table->string('deskripsi')->nullable();
             $table->timestamps();
         });
     }

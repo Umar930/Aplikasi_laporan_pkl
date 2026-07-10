@@ -15,13 +15,26 @@ class ObservasiController extends Controller
 {
     public function index()
     {
+        if(Auth::guard('web')->check()){
         $observasi=Observasi::with('murid')->latest()->get();
-        return view('observasi.index',compact('observasi'));
     }
+    elseif(Auth::guard('guru')->check()){
+        $guruId=Auth::guard('guru')->id();
+        $observasi=Observasi::whereHas('murid',function($query) use ($guruId){
+            $query->where('guru_pembimbing_id',$guruId);
+        })->with('murid')->latest()->get();
+    }
+    elseif(Auth::guard('dudi')->check()){
+        $dudiId=Auth::guard('dudi')->id();
+        $observasi=Observasi::whereHas('murid',function($query) use ($dudiId){
+            $query->where('dudi_id',$dudiId);
+        })->with('murid')->latest()->get();
+    }else{
+        abort(403);
+    }   
+    return view('observasi.index',compact('observasi'));
+   }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $daftarMurid=collect();
@@ -32,17 +45,15 @@ class ObservasiController extends Controller
             $indikators=Tujuan_Pembelajaran_Indikator::all();
         
             return view('observasi.tambah',compact('daftarMurid','indikators'));
-}
+    }
 
     
     public function store(Request $request)
     {
-        if(!Auth::guard('guru')->check()&&!Auth::guard('dudi')->check()){
-            abort(403,'akses ditolak');
-        }
+        $this->authCrud();
 
         $request->validate([
-            'murid_id'=>'required',
+             'murid_id'=>'required',
             'pekerjaan_proyek'=>'required',
             'observasi'=>'required|array',
         ]);
@@ -59,7 +70,8 @@ class ObservasiController extends Controller
                 Observasi_details::create([
                     'observasi_id'=>$observasi->id,
                     'indikator_id'=>$indikator_id,
-                    'ketercapaian'=>$data['ketercapaian']
+                    'ketercapaian'=>$data['ketercapaian'],
+                    'deskripsi'=>$data['deskripsi'] ?? null,
                 ]);
             }
             DB::commit();
@@ -78,17 +90,20 @@ class ObservasiController extends Controller
 
     public function edit($id)
     {
-        if(!Auth::guard('guru')->check()&&!Auth::guard('dudi')->check()){
-            abort(403,'akses ditolak');
-        }
+     $this->authCrud();
+
 
         $observasi=Observasi::with('details')->findOrFail($id);
 
+        if(!$this->cekAksesData($observasi)){
+            abort(403,'anda tidak memiliki akses untuk mengubah data ini');
+        }
+
         $indikators=Tujuan_Pembelajaran_Indikator::select('point_utama',DB::raw('MIN(id) as id'))
         ->groupBy('point_utama')->get()
-        ->keyBy('indikator_id');
+        ->keyBy('id');
 
-        $observasiEksis=$observasi->details->keyBy('indikator_id');
+        $observasiEksis=$observasi->details->keyBy('id');
 
         if($observasiEksis->isEmpty()){ 
             return redirect('observasi.tambah')->with('error','data observasi belum ada');
@@ -104,24 +119,25 @@ class ObservasiController extends Controller
      */
     public function update(Request $request,$id)
     {
-        if(!Auth::guard('guru')->check()&&!Auth::guard('dudi')->check()){
-            abort(403,'akses ditolak');
-        }
-        
+        $this->authCrud();
 
         DB::beginTransaction();
         try{
             $observasi=Observasi::findOrFail($id);
+            if(!$this->cekAksesData($observasi)){
+                abort(403,'anda tidak memiliki akses untuk mengubah data ini');
+            }
             $observasi->update([
                 'pekerjaan_proyek'=>$request->pekerjaan_proyek,
             ]);
 
             $observasi->details()->delete();
             foreach($request->observasi as $indikator_id =>$data){
-                Observasi_details::updateOrCreate([
+                Observasi_details::create([
                     'observasi_id'=>$id,
                     'indikator_id'=>$indikator_id,
                     'ketercapaian'=>$data['ketercapaian'],
+                    'deskripsi'=>$data['deksripsi'] ?? null,
                 ]);
             }
             DB::commit();
@@ -134,13 +150,13 @@ class ObservasiController extends Controller
 
     public function destroy($id)
     {
-        if(!Auth::guard('guru')->check()&&!Auth::guard('dudi')->check()){
-            abort(403,'akses ditolak hanya dudi dan guru yang bisa menghapus data ini');
-        }
+        $this->authCrud();
 
         try{
             $observasi=Observasi::findOrFail($id);
-
+            if(!$this->cekAksesData($observasi)){
+                abort(403,'anda tidak memiliki akses untuk mengubah data ini');
+            }
             $observasi->delete();
             return redirect()->route('observasi.index')->with('sukses','data berhasil dihapus');
         }catch(\Exception $e){
@@ -149,21 +165,49 @@ class ObservasiController extends Controller
     }
 
     public function verifikasidetail($id){
-        $detail=Observasi_details::findOrFail($id);
+        $observasi=Observasi::findOrFail($id);
 
+        if(!$this->cekAksesData($observasi)){
+            abort(403,'anda tidak memiliki akses untuk mengubah data ini');
+        }
+        
         if(Auth::guard('guru')->check()){
-            $detail->guru_verifikator_id = Auth::guard('guru')->id();
+            $observasi->diverifikasi_oleh_guru = Auth::guard('guru')->id();
         }
 
         if(Auth::guard('dudi')->check()){
-            $detail->dudi_verifikator_id=Auth::guard('dudi')->id();
+            $observasi->diverifikasi_oleh_dudi=Auth::guard('dudi')->id();
         }
-        if($detail->dudi_verifikator_id && $detail->dudi_verifikator_id){
-            $detail->status_verifikasi='diverifikasi';
+        if($observasi->diverifikasi_oleh_guru && $observasi->diverifikasi_oleh_dudi){
+            $observasi->status_verifikasi='diverifikasi';
         }
 
-        $detail->save();
+        $observasi->save();
 
         return back()->with('sukses','data berhasil diverifikasi');
     }
+
+
+    private function authCrud(){
+        if(!Auth::guard('web')->check() && !Auth::guard('guru')->check() && !Auth::guard('dudi')->check()){
+            abort(403,'akses ditolak');
+        }
+    }
+
+    private function cekAksesData($observasi)
+{
+    if(Auth::guard('web')->check()){
+        return true;
+    }
+
+    if(Auth::guard('guru')->check()){
+        return $observasi->murid->guru_pembimbing_id == Auth::guard('guru')->id();
+    }
+
+    if(Auth::guard('dudi')->check()){
+        return $observasi->murid->dudi_id == Auth::guard('dudi')->id();
+    }
+
+    return false;
+}
 } 
