@@ -44,7 +44,12 @@ class TujuanPembelajaranController extends Controller
      */
     public function create()
     {
-        //
+        if(!Auth::guard('web')->check()){
+            abort(403,'akses anda ditolak');
+        }
+        $indikator=Tujuan_Pembelajaran_Indikator::all();
+        return view('indikatot.tambah');
+
     }
 
     /**
@@ -52,7 +57,22 @@ class TujuanPembelajaranController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        if(!Auth::guard('web')->check()){
+            abort(403,'akses anda ditolak');
+        }
+
+        $request->validate([
+            'point_utama'=>'requeired',
+            'point_details'=>'required'
+        ]);
+
+        Tujuan_Pembelajaran_Indikator::create([
+            'point_utama'=>$request->point_utama,
+            'point_details'=>$request->point_details,
+        ]);
+
+        return redirect('indikator.index');
     }
 
     /**
@@ -60,15 +80,17 @@ class TujuanPembelajaranController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $indikator=Tujuan_Pembelajaran_Indikator::all();
+        return view('indikator.index');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $indikator=Tujuan_Pembelajaran_Indikator::findOrFail($id);
+        return view('indikator.index',compact('indikator'));
     }
 
     /**
@@ -76,7 +98,19 @@ class TujuanPembelajaranController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        if(!Auth::guard('web')->check()){
+            abort(403,'akses ditolak');
+        }
+
+        $indikator=Tujuan_Pembelajaran_Indikator::findOrFail($id);
+
+        $indikator->update([
+            'point_utama'=>$request->point_utama,
+            'point_details'=>$request->point_details,
+        ]);
+
+        return redirect('indikator.index',compact('indikator'));
     }
 
     /**
@@ -84,6 +118,12 @@ class TujuanPembelajaranController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if(!Auth::guard('web')->check()){
+            abort(403,'akses ditolak');
+        }
+
+        $indikator=Tujuan_Pembelajaran_Indikator::findOrFail($id);
+        $indikator->delete();
+        return redirect('indikator.index')->with('sukses','data berhasil dihapus');
     }
 }

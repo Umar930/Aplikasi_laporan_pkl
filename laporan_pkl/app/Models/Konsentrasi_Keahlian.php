@@ -10,7 +10,7 @@ class Konsentrasi_Keahlian extends Model
     protected $table='konsentrasi_keahlian';
     protected $fillable=[
         'program_keahlian',
-        'konsentrasi-keahlian',
+        'konsentrasi_keahlian',
     ];
 
     public function murid(){

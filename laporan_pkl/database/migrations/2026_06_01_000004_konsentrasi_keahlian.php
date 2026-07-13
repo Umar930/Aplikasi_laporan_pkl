@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('konsentrasi_keahlian',function (Blueprint $table){
             $table->id();
             $table->string('program_keahlian');
-            $table->string('konsentrasi-keahlian');
+            $table->string('konsentrasi_keahlian');
             $table->timestamps();
         });
     }
