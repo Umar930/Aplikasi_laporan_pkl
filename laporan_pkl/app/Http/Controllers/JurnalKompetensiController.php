@@ -132,7 +132,6 @@ class JurnalKompetensiController extends Controller
             abort(403,'akses ditolak');
         }
         $request->validate([
-            
             'kompetensi'=>'required|array',
             'kompetensi.*.pelaksanaan'=>'required',
             'kompetensi.*.nilai_minimal'=>'required|integer',
