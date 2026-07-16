@@ -139,15 +139,10 @@ class JurnalKompetensiController extends Controller
             'kompetensi.*.nilai'=>'required|integer',
             'kompetensi.*.tanggal'=>'required|date',
         ]);
-<<<<<<< HEAD
-        $jurnal->details()->delete();
-=======
 
         // $jurnal->details()->delete();
->>>>>>> fed6f151a9d202bf7a9d5a3263fc63f5cfd4915b
 
         foreach($request->kompetensi as $kompetensi_id=>$data){
-
             JurnalDetail::updateOrCreate([
                 'jurnal_kompetensi_id'=>$jurnal->id,
                 'kompetensi_dasar_id'=>$kompetensi_id,

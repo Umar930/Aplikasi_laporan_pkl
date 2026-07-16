@@ -157,7 +157,7 @@ class AuthController extends Controller
         if(Auth::guard($guard)->attempt($credentials, $request->filled('remember'))){
             $request->session()->regenerate();
             
-            if ($guard === 'dudi') return redirect()->route('dudi.nilai');
+            if ($guard === 'dudi') return redirect()->route('dudi.nilai.index');
             if ($guard === 'guru') return redirect()->route('guru.kompetensi');
             if ($guard === 'web') return redirect()->route('web.observasi');
         }

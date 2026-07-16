@@ -6,6 +6,7 @@ use App\Models\Murid;
 use App\Models\Laporan_Nilai;
 use App\Models\Laporan_nilai_details;
 use App\Models\Tujuan_Pembelajaran_Indikator;
+use App\Models\Konsentrasi_Keahlian;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,21 +15,34 @@ class DaftarNilaiController extends Controller
     public function index()
     {
         if(Auth::guard('web')->check()){
-            $nilai=Laporan_Nilai::with('murid')->latest()->get();
+            $query=Laporan_Nilai::with('murid','nilai_details');
         }elseif(Auth::guard('guru')->check()){
             $guruId=Auth::guard('guru')->id();
-            $nilai=Laporan_Nilai::whereHas('murid',function($query) use ($guruId){
-                $query->where('guru_pembimbing_id',$guruId);
-            })->with('murid')->latest()->get();
+            $query=Laporan_Nilai::whereHas('murid',function($q) use ($guruId){
+                $q->where('guru_pembimbing_id',$guruId);
+            })->with('murid','nilai_details');
         }elseif(Auth::guard('dudi')->check()){
             $dudiId=Auth::guard('dudi')->id();
-            $nilai=Laporan_Nilai::whereHas('murid',function($query) use ($dudiId){
-                $query->where('dudi_id',$dudiId);
-            })->with('murid')->latest()->get();
+            $query=Laporan_Nilai::whereHas('murid',function($q) use ($dudiId){
+                $q->where('dudi_id',$dudiId);
+            })->with('murid','nilai_details');
         }else{
             abort(403);
         }
-        return view('daftar-nilai.index',compact('nilai'));
+
+        $nilaiPaginate = $query->latest()->paginate(1);
+
+        $laporanAktif = $nilaiPaginate->first();
+        $nilaiEksis = collect();
+        if($laporanAktif && $laporanAktif->nilai_details){
+            $nilaiEksis = $laporanAktif->nilai_details->keyBy('indikator_id');
+        }
+
+        $query = Laporan_Nilai::with(['murid', 'nilai_details.indikator']);
+
+        $konsentrasi = Konsentrasi_Keahlian::all();
+        $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all()->groupBy('point_utama');
+        return view('laporan-nilai.index',compact('konsentrasi','tujuan_pembelajaran','nilaiPaginate','laporanAktif','nilaiEksis'));
     }
 
     public function create()
@@ -40,11 +54,21 @@ class DaftarNilaiController extends Controller
         }elseif(Auth::guard('dudi')->check()){
             $murid=Murid::Where('dudi_id',Auth::guard('dudi')->id())->get();
         }else{
-        $murid=Murid::orderBy('nama')->get();
+        $murid=Murid::orderBy('nama_murid')->get();
     }
-        $indikators=Tujuan_Pembelajaran_Indikator::all();
+        $tujuan_pembelajaran=Tujuan_Pembelajaran_Indikator::all()->pluck('point_utama','id')->unique();
 
-        return view('daftar-nilai.tambah',compact('murid','indikators'));
+        $program = Konsentrasi_Keahlian::pluck('program_keahlian')->unique();
+        $konsentrasi = Konsentrasi_Keahlian::all();
+
+        if(Auth::guard('guru')->check()) {
+            return view('laporan-nilai.tambah', compact('program','konsentrasi','murid','tujuan_pembelajaran'));
+        }
+        if(Auth::guard('dudi')->check()) {
+            return view('laporan-nilai.tambah', compact('program','konsentrasi','murid','tujuan_pembelajaran'));
+        }
+
+        return view('laporan-nilai.tambah',compact('program','konsentrasi','murid','tujuan_pembelajaran'));
     }
 
     public function store(Request $request)
@@ -63,6 +87,9 @@ class DaftarNilaiController extends Controller
             $laporan=Laporan_Nilai::create([
                 'murid_id'=>$request->murid_id,
                 'nisn'=>$request->nisn,
+                'program_keahlian'=>$request->program_keahlian,
+                'konsentrasi_keahlian'=>$request->konsentrasi_keahlian,
+                'tempat_pkl'=>$request->tempat_pkl,
                 'tanggal_mulai'=>$request->tanggal_mulai,
                 'tanggal_berakhir'=>$request->tanggal_berakhir,
                 'catatan'=>$request->catatan,
@@ -71,17 +98,26 @@ class DaftarNilaiController extends Controller
                 'kehadiran_tanpa_keterangan'=>$request->kehadiran_tanpa_keterangan,
             ]);
 
-            foreach($request->nilai as $indikator_id=>$dataIndikator){
-                Laporan_nilai_details::create([
+            foreach($request->nilai as $index => $dataIndikator){
+                if (!empty($dataIndikator['indikator_id'])) {
+                    Laporan_nilai_details::create([
                     'laporan_nilai_id'=>$laporan->id,
-                    'indikator_id'=>$indikator_id,
+                    'indikator_id'=>$dataIndikator['indikator_id'],
                     'skor'=>$dataIndikator['skor'],
                     'deskripsi'=>$dataIndikator['deskripsi']??null,
                     
-                ]);
+                    ]);
+                }
             }
             DB::commit();
-            return redirect()->route('laporan-nilai.index')->with('sukses','berhasil disimpan');
+
+            if (Auth::guard('guru')->check()) {
+                return redirect()->route('guru.nilai.index')->with('sukses', 'data berhasil ditambahkan oleh Guru');
+            } elseif (Auth::guard('dudi')->check()) {
+                return redirect()->route('dudi.nilai.index')->with('sukses', 'data berhasil ditambahkan oleh Dudi');
+            }
+
+            return redirect()->back()->with('sukses','berhasil disimpan');
         }catch(\Exception $e){
             DB::rollBack();
             return redirect()->back()->with('error','gagal menyimpan: '.$e->getMessage())->withInput();
@@ -94,22 +130,42 @@ class DaftarNilaiController extends Controller
             'murid',
             'details.indikator'
         ])->findOrFail($id);
-        return view('daftar-nilai.index',compact('laporan'));
+        return view('laporan-nilai.index',compact('laporan'));
     }
     
 
     public function edit($id)
     {
         $this->authCrud();
-         $laporan=Laporan_Nilai::with('details')->findOrFail($id);
+
+        if(Auth::guard('guru')->check()){
+            
+        $murid=Murid::Where('guru_pembimbing_id',Auth::guard('guru')->id())->get();
+        }elseif(Auth::guard('dudi')->check()){
+            $murid=Murid::Where('dudi_id',Auth::guard('dudi')->id())->get();
+        }else{
+        $murid=Murid::orderBy('nama_murid')->get();
+        }
+
+         $laporan=Laporan_Nilai::with('nilai_details')->findOrFail($id);
 
          if(!$this->cekAksesData($laporan)){
             abort(403,'anda tidak memiliki akses untuk mengubah data');
          }
-        $indikators=Tujuan_Pembelajaran_Indikator::all();
-        $nilaiEksis=$laporan->details->keyBy('indikator_id');
+
+        $tujuan_pembelajaran=Tujuan_Pembelajaran_Indikator::all()->pluck('point_utama','id')->unique();
+        $konsentrasi = Konsentrasi_Keahlian::all();
+        $program = Konsentrasi_Keahlian::pluck('program_keahlian')->unique();
+        $nilaiEksis=$laporan->nilai_details->keyBy('indikator_id');
         $infoUmum=$laporan;
-        return view('laporan-nilai.edit',compact('indikators','laporan','nilaiEksis','infoUmum'));
+
+        if(Auth::guard('guru')->check()) {
+            return view('laporan-nilai.edit', compact('laporan','program','konsentrasi','murid','tujuan_pembelajaran'));
+        }
+        if(Auth::guard('dudi')->check()) {
+            return view('laporan-nilai.edit', compact('laporan','program','konsentrasi','murid','tujuan_pembelajaran'));
+        }
+        return view('laporan-nilai.edit',compact('program','konsentrasi','murid','tujuan_pembelajaran','laporan','nilaiEksis','infoUmum'));
     }
 
     public function update(Request $request,$id)
@@ -125,6 +181,11 @@ class DaftarNilaiController extends Controller
                 abort(403,'anda tidak memiliki akses dari data');
             }
             $laporan->update([
+                'murid_id'=>$request->murid_id,
+                'nisn'=>$request->nisn,
+                'program_keahlian'=>$request->program_keahlian,
+                'konsentrasi_keahlian'=>$request->konsentrasi_keahlian,
+                'tempat_pkl'=>$request->tempat_pkl,
                 'tanggal_mulai'=>$request->tanggal_mulai,
                 'tanggal_berakhir'=>$request->tanggal_berakhir,
                 'catatan'=>$request->catatan,
@@ -132,22 +193,30 @@ class DaftarNilaiController extends Controller
                 'kehadiran_ijin'=>$request->kehadiran_ijin,
                 'kehadiran_tanpa_keterangan'=>$request->kehadiran_tanpa_keterangan,    
             ]);
-            foreach($request->nilai as $indikator_id=>$dataIndikator){
-                Laporan_nilai_details::updateOrCreate([
+            foreach($request->nilai as $index => $dataIndikator){
+                if (!empty($dataIndikator['indikator_id'])) {
+                    Laporan_nilai_details::updateOrCreate([
                     'laporan_nilai_id'=>$id,
-                    'indikator_id'=>$indikator_id,
-                ],[
+                    'indikator_id'=>$dataIndikator['indikator_id'],
+                    ],[
                     'skor'=>$dataIndikator['skor'],
                     'deskripsi'=>$dataIndikator['deskripsi']??null,
-                ]);
+                    ]);
+                }
             }
-     
+    
             DB::commit();
-            return redirect()->route('laporan-nilai.index')->with('sukses','laporan berhasil di update');
+
+            if (Auth::guard('guru')->check()) {
+                return redirect()->route('guru.nilai.index')->with('sukses', 'data berhasil diupdate oleh Guru');
+            } elseif (Auth::guard('dudi')->check()) {
+                return redirect()->route('dudi.nilai.index')->with('sukses', 'data berhasil diupdate oleh Dudi');
+            }
+            return redirect()->back()->with('sukses','laporan berhasil di update');
         }catch(\Exception $e){
             DB::rollBack();
             return redirect()->back()->with('error','gagal update data: '.$e->getMessage())->withInput();
-        };
+        }
     }
 
     
@@ -162,7 +231,13 @@ class DaftarNilaiController extends Controller
                 abort(403,'anda tidak memiliki akses untuk mengubah data');
              }    
             $laporan->delete();
-            return redirect()->route('laporan-nilai.index')->with('sukses','data berhasil di hapus');
+
+            if (Auth::guard('guru')->check()) {
+                return redirect()->route('guru.nilai.index')->with('sukses', 'data berhasil dihapus oleh Guru');
+            } elseif (Auth::guard('dudi')->check()) {
+                return redirect()->route('dudi.nilai.index')->with('sukses', 'data berhasil dihapus oleh Dudi');
+            }
+            return redirect()->back()->with('sukses','data berhasil di hapus');
         }catch(\exception $e){
             return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
@@ -172,14 +247,18 @@ class DaftarNilaiController extends Controller
         return $request->validate([
             'murid_id' =>'required|exists:murid,id',
             'nisn' =>'required|string',
+            'program_keahlian' => 'required|string',
+            'konsentrasi_keahlian' => 'required|string',
             'tanggal_mulai' =>'required|date',
             'tanggal_berakhir' =>'required|date',
+            'tempat_pkl' =>'required|string',
             'kehadiran_sakit' =>'required|integer|min:0',
             'kehadiran_ijin' =>'required|integer|min:0',
             'kehadiran_tanpa_keterangan' =>'required|integer|min:0',
             'catatan' =>'nullable|string',
             'nilai' =>'required|array',
-            'nilai.*.skor' =>'required|numeric|min:0|max:100',
+            'nilai.*.indikator_id' =>'nullable|integer',
+            'nilai.*.skor' =>'nullable|numeric|min:0|max:100',
             'nilai.*.deskripsi' =>'nullable|string',
         ]);
     }

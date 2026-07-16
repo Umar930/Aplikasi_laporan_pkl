@@ -16,23 +16,36 @@ class ObservasiController extends Controller
     public function index()
     {
         if(Auth::guard('web')->check()){
-        $observasi=Observasi::with('murid')->latest()->get();
+        $query=Observasi::with('murid.guru', 'murid.dudi', 'details.indikator');
     }
     elseif(Auth::guard('guru')->check()){
         $guruId=Auth::guard('guru')->id();
-        $observasi=Observasi::whereHas('murid',function($query) use ($guruId){
-            $query->where('guru_pembimbing_id',$guruId);
-        })->with('murid')->latest()->get();
+        $query=Observasi::whereHas('murid',function($q) use ($guruId){
+            $q->where('guru_pembimbing_id',$guruId);
+        })->with('murid.guru','murid.dudi','details.indikator');
     }
     elseif(Auth::guard('dudi')->check()){
         $dudiId=Auth::guard('dudi')->id();
-        $observasi=Observasi::whereHas('murid',function($query) use ($dudiId){
-            $query->where('dudi_id',$dudiId);
-        })->with('murid')->latest()->get();
+        $query=Observasi::whereHas('murid',function($q) use ($dudiId){
+            $q->where('dudi_id',$dudiId);
+        })->with('murid.guru','murid.dudi','details.indikator');
     }else{
         abort(403);
     }   
-    return view('observasi.index',compact('observasi'));
+
+    $observasiPaginate = $query->latest()->paginate(1);
+    $observasiAktif = $observasiPaginate->first();
+
+    $detailGroup = collect();
+    if ($observasiAktif && $observasiAktif->details){
+        $detailGroup = $observasiAktif->details->groupBy(function($detail) {
+            return $detail->indikator->point_utama ?? 'lain-lain';
+        });
+    }
+
+    $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all();
+
+    return view('observasi.index',compact('tujuan_pembelajaran','observasiPaginate','observasiAktif','detailGroup'));
    }
 
     public function create()
@@ -42,9 +55,11 @@ class ObservasiController extends Controller
             $daftarMurid=Murid::where('guru_pembimbing_id',Auth::guard('guru')->id())->get();
         }elseif(Auth::guard('dudi')->check()){
             $daftarMurid=Murid::where('dudi_id',Auth::guard('dudi')->id())->get();   }  
-            $indikators=Tujuan_Pembelajaran_Indikator::all();
+
+            $pembelajaran = Tujuan_Pembelajaran_Indikator::pluck('point_utama')->unique();
+            $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all();
         
-            return view('observasi.tambah',compact('daftarMurid','indikators'));
+            return view('observasi.tambah',compact('tujuan_pembelajaran','pembelajaran','daftarMurid'));
     }
 
     
@@ -53,9 +68,15 @@ class ObservasiController extends Controller
         $this->authCrud();
 
         $request->validate([
-             'murid_id'=>'required',
+            'murid_id'=>'required',
+            'tempat_pkl'=>'required',
+            'dudi_id'=>'required',
+            'guru_pembimbing_id'=>'required',
             'pekerjaan_proyek'=>'required',
             'observasi'=>'required|array',
+            'observasi.*.ketercapaian'=>'required|in:iya,tidak',
+            'observasi.*.deskripsi'=>'nullable|string',
+            'observasi.*.skor'=>'nullable|numeric|min:0|max:100',
         ]);
 
         
@@ -63,19 +84,32 @@ class ObservasiController extends Controller
         try{
             $observasi=Observasi::create([
                 'murid_id'=>$request->murid_id,
+                'tempat_pkl'=>$request->tempat_pkl,
+                'dudi_id'=>$request->dudi_id,
+                'guru_pembimbing_id'=>$request->guru_pembimbing_id,
                 'pekerjaan_proyek'=>$request->pekerjaan_proyek,
                 'status_verifikasi'=>'pending'
             ]);
-            foreach($request->observasi as $indikator_id =>$data){
-                Observasi_details::create([
+            foreach($request->observasi as $indikator_id => $data){
+                if (!empty($indikator_id)) {
+                    Observasi_details::create([
                     'observasi_id'=>$observasi->id,
                     'indikator_id'=>$indikator_id,
                     'ketercapaian'=>$data['ketercapaian'],
                     'deskripsi'=>$data['deskripsi'] ?? null,
-                ]);
+                    'skor'=>isset($data['skor']) ? $data['skor'] : null,
+                    ]);
+                }
             }
+
             DB::commit();
-                return redirect()->route('observasi.index')->with('sukses','data observasi berhasil disimpan');
+
+                if (Auth::guard('guru')->check()) {
+                    return redirect()->route('guru.observasi.index')->with('sukses', 'data berhasil ditambahkan oleh Guru');
+                } elseif (Auth::guard('dudi')->check()) {
+                    return redirect()->route('dudi.observasi.index')->with('sukses', 'data berhasil ditambahkan oleh Dudi');
+                }
+                return redirect()->back()->with('sukses','data observasi berhasil disimpan');
         }catch(\Exception $e){
             DB::rollback();
             return redirect()->back()->with('error','gagal menyimpan: '.$e->getMessage())->withInput();
@@ -92,6 +126,13 @@ class ObservasiController extends Controller
     {
      $this->authCrud();
 
+        $daftarMurid=collect();
+        if(Auth::guard('guru')->check()){
+            $daftarMurid=Murid::where('guru_pembimbing_id',Auth::guard('guru')->id())->get();
+        }elseif(Auth::guard('dudi')->check()){
+            $daftarMurid=Murid::where('dudi_id',Auth::guard('dudi')->id())->get();   }  
+
+            $daftarMurid = Murid::orderBy('nama_murid')->get();
 
         $observasi=Observasi::with('details')->findOrFail($id);
 
@@ -111,7 +152,10 @@ class ObservasiController extends Controller
 
         $infoProyek=$observasiEksis->first()->pekerjaan_proyek;
 
-        return view('observasi.edit',compact('observasiEksis','indikators','infoProyek','observasi'));
+        $pembelajaran = Tujuan_Pembelajaran_Indikator::pluck('point_utama')->unique();
+        $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all();
+
+        return view('observasi.edit',compact('daftarMurid','pembelajaran','tujuan_pembelajaran','observasiEksis','indikators','infoProyek','observasi'));
     }
 
     /**
@@ -128,6 +172,10 @@ class ObservasiController extends Controller
                 abort(403,'anda tidak memiliki akses untuk mengubah data ini');
             }
             $observasi->update([
+                'murid_id'=>$request->murid_id,
+                'tempat_pkl'=>$request->tempat_pkl,
+                'dudi_id'=>$request->dudi_id,
+                'guru_pembimbing_id'=>$request->guru_pembimbing_id,
                 'pekerjaan_proyek'=>$request->pekerjaan_proyek,
             ]);
 
@@ -138,10 +186,18 @@ class ObservasiController extends Controller
                     'indikator_id'=>$indikator_id,
                     'ketercapaian'=>$data['ketercapaian'],
                     'deskripsi'=>$data['deksripsi'] ?? null,
+                    'skor'=>isset($data['skor']) ? $data['skor'] : null,
                 ]);
             }
             DB::commit();
-                return redirect()->route('observasi.index')->with('sukses','data observasi berhasil disimpan');
+
+                if (Auth::guard('guru')->check()) {
+                    return redirect()->route('guru.observasi.index')->with('sukses', 'data berhasil diupdate oleh Guru');
+                } elseif (Auth::guard('dudi')->check()) {
+                    return redirect()->route('dudi.observasi.index')->with('sukses', 'data berhasil diupdate oleh Dudi');
+                }
+
+                return redirect()->back()->with('sukses','data observasi berhasil disimpan');
         }catch(\Exception $e){
             DB::rollback();
             return redirect()->back()->with('error','gagal menyimpan: '.$e->getMessage())->withInput();
@@ -158,9 +214,15 @@ class ObservasiController extends Controller
                 abort(403,'anda tidak memiliki akses untuk mengubah data ini');
             }
             $observasi->delete();
-            return redirect()->route('observasi.index')->with('sukses','data berhasil dihapus');
+
+            if (Auth::guard('guru')->check()) {
+                return redirect()->route('guru.observasi.index')->with('sukses', 'data berhasil dihapus oleh Guru');
+            } elseif (Auth::guard('dudi')->check()) {
+                return redirect()->route('dudi.observasi.index')->with('sukses', 'data berhasil dihapus oleh Dudi');
+                }
+            return redirect()->back()->with('sukses','data berhasil dihapus');
         }catch(\Exception $e){
-            return redirect()->back()->with('error','gagal menghaspus data: '.$e->getMessage());
+            return redirect()->back()->with('error','gagal menghapus data: '.$e->getMessage());
         }
     }
 

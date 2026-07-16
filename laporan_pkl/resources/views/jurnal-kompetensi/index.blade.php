@@ -5,7 +5,7 @@
 @section('content')
     <div style="display:flex; flex-direction:column;">
         @unless(Auth::guard('murid')->check())
-        <a class="ms-auto me-2" href="{{ route('jurnal-kompetensi.tambah') }}"><button class="btn btn-primary mt-4"><i class="bi bi-plus-lg me-2"></i>Tambah</button></a>
+        <a class="ms-auto me-2" href=""><button class="btn btn-primary mt-4"><i class="bi bi-plus-lg me-2"></i>Tambah</button></a>
         @endunless
         <br>
         <table class="table table-hover">

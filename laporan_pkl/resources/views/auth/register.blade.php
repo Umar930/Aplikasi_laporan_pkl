@@ -78,7 +78,7 @@
                             </div>
                             <div class="mb-3 data-field" data-user="dudi">
                                 <label for="nama_pembimbing" class="form-label fw-bold">Nama Pembimbing</label>
-                                <input type="text" name="nama_pembimbing" id="nama_pembimbing" value="{{ old('nama_pembimbing') }}" class="form-control">
+                                <input type="text" class="form-control" name="nama_pembimbing" id="nama_pembimbing" value="{{ old('nama_pembimbing') }}">
                             </div>
 
                             <div class="mb-3 data-field" data-user="web guru dudi">
@@ -112,7 +112,7 @@
                                     <select name="konsentrasi_keahlian_id" id="konsentrasi_keahlian_id" class="form-select">
                                         <option value="">-- Pilih Keahlian --</option>
                                         @foreach($konsentrasi as $item)
-                                        <option value="{{ $item->id }}">{{ $item->{'konsentrasi-keahlian'} }}</option>
+                                        <option value="{{ $item->id }}">{{ $item->{'konsentrasi_keahlian'} }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -162,16 +162,16 @@
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="dudi_id" class="form-label fw-bold">Nama DUDI</label>
+                                    <label for="dudi_id" class="form-label fw-bold">Nama Pembimbing</label>
                                     <select name="dudi_id" id="dudi_id" class="form-select">
-                                        <option value="">-- Pilih DUDI --</option>
+                                        <option value="">-- Pilih Pembimbing --</option>
                                         @foreach(\App\Models\Identitas_Dudi::all() as $dudi)
-                                        <option value="{{ $dudi->id }}" {{ old('dudi_id') == $dudi->id ? 'selected' : '' }}>{{ $dudi->nama_dudi }}</option>
+                                        <option value="{{ $dudi->id }}" {{ old('dudi_id') == $dudi->id ? 'selected' : '' }}>{{ $dudi->nama_pembimbing }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="guru_pembimbing_id" class="form-label fw-bold">Nama Pembimbing</label>
+                                    <label for="guru_pembimbing_id" class="form-label fw-bold">Nama Guru Pembimbing</label>
                                     <select name="guru_pembimbing_id" id="guru_pembimbing_id" class="form-select">
                                         <option value="">-- Pilih Guru Pembimbing --</option>
                                         @foreach(\App\Models\Guru_Pembimbing::all() as $guru)

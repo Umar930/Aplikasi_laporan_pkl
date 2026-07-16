@@ -8,9 +8,13 @@ use App\Models\Laporan_nilai_details;
 
 class Laporan_Nilai extends Model
 {
+    protected $table = 'laporan_nilais';
     protected $fillable=[
         'murid_id',
         'nisn',
+        'program_keahlian',
+        'konsentrasi_keahlian',
+        'tempat_pkl',
         'tanggal_mulai',
         'tanggal_berakhir',
         'catatan',

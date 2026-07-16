@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('murid_id')->constrained('murid')->onDelete('cascade');
             $table->integer('nisn');
+            $table->string('program_keahlian');
+            $table->string('konsentrasi_keahlian');
+            $table->string('tempat_pkl');
             $table->date('tanggal_mulai');
             $table->date('tanggal_berakhir');
             $table->string('catatan')->nullable();

@@ -38,7 +38,7 @@ class Murid extends Authenticatable
         return $this->belongsTo(Identitas_Dudi::class,'dudi_id','id');
     }
 
-    public function pembimbing(){
+    public function guru(){
         return $this->belongsTo(Guru_Pembimbing::class,'guru_pembimbing_id','id');
     }
 

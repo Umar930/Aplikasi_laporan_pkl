@@ -14,6 +14,7 @@ class Observasi_details extends Model
         'indikator_id',
         'ketercapaian',
         'deskripsi',
+        'skor',
         ];
 
     

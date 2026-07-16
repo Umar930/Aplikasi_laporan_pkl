@@ -12,6 +12,8 @@ class Observasi extends Model
     protected $table='observasi';
     protected $fillable = [
         'murid_id',
+        'tempat_pkl',
+        'dudi_id',
         'guru_pembimbing_id',
         'pekerjaan_proyek',
         'indikator_id',
@@ -25,8 +27,12 @@ class Observasi extends Model
         return $this->belongsTo(Murid::class,'murid_id','id');
     }
 
-    public function pembimbing(){
+    public function guru(){
         return $this->belongsTo(Guru_Pembimbing::class,'guru_pembimbing_id','id');
+    }
+
+    public function dudi(){
+        return $this->belongsTo(Identitas_Dudi::class, 'dudi_id', 'id');
     }
 
     public function details(){

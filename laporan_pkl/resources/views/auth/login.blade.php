@@ -15,7 +15,7 @@
             @if (session('sukses'))
                 <div class="alert alert-success alert-dismissible fade show py-2 px-3 text-sm" role="alert">
                     {{ session('sukses') }}
-                    <button type="button" class="btn-close align-middle" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close align-items-center" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 

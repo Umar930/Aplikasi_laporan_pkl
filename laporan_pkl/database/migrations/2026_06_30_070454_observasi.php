@@ -14,6 +14,8 @@ return new class extends Migration
        Schema::create('observasi',function(Blueprint $table){
         $table->id();
         $table->foreignId('murid_id')->constrained('murid')->onDelete('cascade');
+        $table->string('tempat_pkl');
+        $table->foreignId('dudi_id')->constrained('identitas_dudi')->onDelete('cascade');
         $table->foreignId('guru_pembimbing_id')->constrained('guru_pembimbings')->onDelete('cascade');
         $table->string('pekerjaan_proyek');
         $table->enum('status_verifikasi',['pending','diverifikasi'])->default('pending');
@@ -28,6 +30,7 @@ return new class extends Migration
             $table->foreignId('indikator_id')->constrained('tujuan_pembelajaran_indikator')->onDelete('cascade');
             $table->enum('ketercapaian',['iya','tidak'])->default('iya');
             $table->string('deskripsi')->nullable();
+            $table->decimal('skor', 5, 2)->nullable();
             $table->timestamps();
        });
     }

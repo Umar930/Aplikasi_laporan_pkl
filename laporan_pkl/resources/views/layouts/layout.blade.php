@@ -65,7 +65,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                <a href="{{ route('web.profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
                     <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
@@ -103,17 +103,17 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('guru.nilai') }}" class="nav-link {{ request()->routeIs('guru.nilai') ? 'active' : '' }}">
+                <a href="{{ route('guru.nilai.index') }}" class="nav-link {{ request()->routeIs('guru.nilai') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
                 </a>
             </li>
             <li>
-                <a href="{{ route('guru.observasi') }}" class="nav-link {{ request()->routeIs('guru.observasi') ? 'active' : '' }}">
+                <a href="{{ route('guru.observasi.index') }}" class="nav-link {{ request()->routeIs('guru.observasi') ? 'active' : '' }}">
                     <i class="bi bi-box-seam me-2"></i> Observasi
                 </a>
             </li>
             <li>
-                <a href="{{ route('profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                <a href="{{ route('guru.profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
                     <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
@@ -122,7 +122,7 @@
             @auth('dudi')
             <li>
                 <p class=" mb-2 fs-4 fw-bold text-secondary">Dashboard Dudi</p>
-                <a href="{{ route('dudi.nilai') }}" class="nav-link {{ request()->routeIs('dudi.nilai') ? 'active' : '' }}">
+                <a href="{{ route('dudi.nilai.index') }}" class="nav-link {{ request()->routeIs('dudi.nilai') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
                 </a>
             </li>
@@ -132,12 +132,12 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('dudi.observasi') }}" class="nav-link {{ request()->routeIs('dudi.observasi') ? 'active' : '' }}">
+                <a href="{{ route('dudi.observasi.index') }}" class="nav-link {{ request()->routeIs('dudi.observasi') ? 'active' : '' }}">
                     <i class="bi bi-box-seam me-2"></i> Observasi
                 </a>
             </li>
             <li>
-                <a href="{{ route('profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                <a href="{{ route('dudi.profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
                     <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
@@ -158,7 +158,7 @@
                         @elseif (Auth::guard('guru')->check())
                             {{ Auth::guard('guru')->user()->nama }}
                         @elseif (Auth::guard('dudi')->check())
-                            {{ Auth::guard('dudi')->user()->nama_dudi }}
+                            {{ Auth::guard('dudi')->user()->nama_pembimbing }}
                         @elseif (Auth::guard('web')->check())
                             {{ Auth::guard('web')->user()->name }}
                         @endif
