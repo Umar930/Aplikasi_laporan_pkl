@@ -17,23 +17,34 @@ class JurnalKompetensiController extends Controller
     public function index()
     {
         if(Auth::guard('web')->check()){
-            $jurnal=Jurnal_Kompetensi::with('murid')->latest()->get();
+            $query=Jurnal_Kompetensi::with('murid','jurnaldetail.kompetensi');
         }elseif(Auth::guard('guru')->check()){
             $guruId=Auth::guard('guru')->id();
-            $jurnal=Jurnal_Kompetensi::whereHas('murid',function($query) use ($guruId){
-                $query->where('guru_pembimbing_id',$guruId);
-            })->with('murid')->latest()->get();
+            $query=Jurnal_Kompetensi::whereHas('murid',function($q) use ($guruId){
+                $q->where('guru_pembimbing_id',$guruId);
+            })->with('murid', 'jurnaldetail.kompetensi');
         }elseif(Auth::guard('dudi')->check()){
             $dudiId=Auth::guard('dudi')->id();
-            $jurnal=Jurnal_Kompetensi::whereHas('murid',function($query) use ($dudiId){
-               $query->where('dudi_id',$dudiId);
-            })->with('murid')->latest()->get();
-         }else{
+            $query=Jurnal_Kompetensi::whereHas('murid',function($q) use ($dudiId){
+            $q->where('dudi_id',$dudiId);
+            })->with('murid','jurnaldetail.kompetensi');
+        }else{
             abort(403,'akses ditolak');
-         }   
+        }   
         
+        $jurnalPaginate = $query->latest()->paginate(1);
+        $jurnalAktif = $jurnalPaginate->first();
+
+        $detailGroup = collect();
+        if($jurnalAktif && $jurnalAktif->jurnaldetail){
+            $detailGroup = $jurnalAktif->jurnaldetail->groupBy(function($details){
+                return $details->kompetensi->kategori_utama ?? 'lainnya';
+            });
+        }
+
+        $kompetensi = Kompetensi_Dasar::all();
         
-        return view('jurnal-kompetensi.index',compact('jurnal'));
+        return view('jurnal-kompetensi.index',compact('kompetensi','jurnalPaginate','jurnalAktif','detailGroup'));
     }
 
     public function create()
@@ -51,6 +62,17 @@ class JurnalKompetensiController extends Controller
     public function store(Request $request)
     {
         $this->authCrud();
+
+
+        $request->validate([
+                'murid_id'=>'required|exists:murid,id',
+                'kompetensi'=>'required|array',
+                'kompetensi.*.pelaksanaan_pembelajaran'=>'required',
+                'kompetensi.*.nilai_minimal_kompetensi'=>'required|integer',
+                'kompetensi.*.nilai_kompetensi'=>'required|integer',
+                'kompetensi.*.tanggal'=>'required|date',
+                'kompetensi.*.keterangan'=>'nullable|string',
+            ]);
 
         $cek = Jurnal_Kompetensi::where(
             'murid_id',
@@ -73,25 +95,25 @@ class JurnalKompetensiController extends Controller
 
 
         foreach($request->kompetensi as $kompetensi_id=>$data){
-            $request->validate([
-                'murid_id'=>'required|exists:murid,id',
-                'kompetensi'=>'required|array',
-                'kompetensi.*.pelaksanaan'=>'required',
-                'kompetensi.*.nilai_minimal'=>'required|integer',
-                'kompetensi.*.nilai'=>'required|integer',
-                'kompetensi.*.tanggal'=>'required|date',
-            ]);
             JurnalDetail::create([
                 'jurnal_kompetensi_id'=>$jurnal->id,
                 'kompetensi_dasar_id'=>$kompetensi_id,
-                'pelaksanaan_pembelajaran'=>$data['pelaksanaan'],
-                'nilai_minimal_kompetensi'=>$data['nilai_minimal'],
-                'nilai_kompetensi'=>$data['nilai'],
+                'pelaksanaan_pembelajaran'=>$data['pelaksanaan_pembelajaran'],
+                'nilai_minimal_kompetensi'=>$data['nilai_minimal_kompetensi'],
+                'nilai_kompetensi'=>$data['nilai_kompetensi'],
                 'tanggal'=>$data['tanggal'],
                 'keterangan'=>$data['keterangan'],
             ]);
         }
         DB::commit();
+
+        if(Auth::guard('guru')->check()){
+            return redirect()->route('guru.jurnal.index')->with('sukses','data berhasill ditambahkan oleh Guru');
+        }
+        if(Auth::guard('dudi')->check()){
+            return redirect()->route('guru.jurnal.index')->with('sukses','data berhasill ditambahkan oleh Dudi');
+        }
+
         return redirect()->route('jurnal-kompetensi.index')->with('sukses','data berhasil ditambahkan');
     }catch(\Exception $e){
         DB::rollBack();
@@ -101,7 +123,7 @@ class JurnalKompetensiController extends Controller
 
     public function show($id)
     {
-        $jurnal=Jurnal_Kompetensi::with(['murid','details.kompetensiDasar'])->findOrFail($id);
+        $jurnal=Jurnal_Kompetensi::with(['murid','details.kompetensi'])->findOrFail($id);
         if(!$this->cekAksesData($jurnal)){
             abort(403,'akses ditolak');
         }
@@ -113,12 +135,13 @@ class JurnalKompetensiController extends Controller
     {
         $this->authCrud();
 
-        $jurnal=Jurnal_Kompetensi::with('details.kompetensiDasar')->findOrFail($id);
+        $murid=Murid::all();
+        $jurnal=Jurnal_Kompetensi::with('jurnaldetail.kompetensi')->findOrFail($id);
         if(!$this->cekAksesData($jurnal)){
             abort(403,'akses ditolak');
         }
         $kompetensi=Kompetensi_Dasar::all();
-        return view('jurnal-kompetensi.edit',compact('jurnal','kompetensi'));
+        return view('jurnal-kompetensi.edit',compact('murid','jurnal','kompetensi'));
     }
 
     public function update(Request $request,$id)
@@ -133,10 +156,11 @@ class JurnalKompetensiController extends Controller
         }
         $request->validate([
             'kompetensi'=>'required|array',
-            'kompetensi.*.pelaksanaan'=>'required',
-            'kompetensi.*.nilai_minimal'=>'required|integer',
-            'kompetensi.*.nilai'=>'required|integer',
+            'kompetensi.*.pelaksanaan_pembelajaran'=>'required',
+            'kompetensi.*.nilai_minimal_kompetensi'=>'required|integer',
+            'kompetensi.*.nilai_kompetensi'=>'required|integer',
             'kompetensi.*.tanggal'=>'required|date',
+            'kompetensi.*.keterangan'=>'nullable|string',
         ]);
 
         // $jurnal->details()->delete();
@@ -146,14 +170,22 @@ class JurnalKompetensiController extends Controller
                 'jurnal_kompetensi_id'=>$jurnal->id,
                 'kompetensi_dasar_id'=>$kompetensi_id,
                 ],[
-                    'pelaksanaan_pembelajaran'=>$data['pelaksanaan'],
-                'nilai_minimal_kompetensi'=>$data['nilai_minimal'],
-                'nilai_kompetensi'=>$data['nilai'],
+                    'pelaksanaan_pembelajaran'=>$data['pelaksanaan_pembelajaran'],
+                'nilai_minimal_kompetensi'=>$data['nilai_minimal_kompetensi'],
+                'nilai_kompetensi'=>$data['nilai_kompetensi'],
                 'tanggal'=>$data['tanggal'],
                 'keterangan'=>$data['keterangan'] ?? null,
                 ]);
         }
         DB::commit();
+
+        if(Auth::guard('guru')->check()){
+            return redirect()->route('guru.jurnal.index')->with('sukses', 'Data berhasil diupdate oleh Guru');
+        }
+        if(Auth::guard('dudi')->check()){
+            return redirect()->route('guru.jurnal.index')->with('sukses', 'Data berhasil diupdate oleh Guru');
+        }
+
         return redirect()->route('jurnal-kompetensi.index')->with('sukses','data berhasil diperbarui');
     }catch(\Exception $e){
         DB::rollBack();
@@ -174,6 +206,10 @@ class JurnalKompetensiController extends Controller
 
         $jurnal->delete();   
         
+        if(Auth::guard('guru')->check()){
+            return redirect()->route('guru.jurnal.index')->with('sukses', 'data berhasil dihapus oleh Guru');
+        }
+
         return redirect()->route('jurnal-kompetensi.index')->with('sukses','data telah dihapus');
     }
 

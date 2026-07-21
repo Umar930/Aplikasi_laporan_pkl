@@ -8,6 +8,7 @@ use App\Models\Murid;
 
 class Jurnal_Kompetensi extends Model
 {
+    protected $table = 'jurnal_kompetensi';
     protected $fillable=[
         'murid_id',
     ];
@@ -17,6 +18,6 @@ class Jurnal_Kompetensi extends Model
     }
 
     public function jurnaldetail(){
-        return $this->hasMany(JurnalDetail::class,'kompetensi_dasar_id','id');
+        return $this->hasMany(JurnalDetail::class,'jurnal_kompetensi_id','id');
     }
 }

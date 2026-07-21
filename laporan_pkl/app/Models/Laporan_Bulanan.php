@@ -9,13 +9,14 @@ use App\Models\Guru_Pembimbing;
 
 class Laporan_Bulanan extends Model
 {
+    protected $table = 'laporan_bulanans';
     protected $fillable=[
         'murid_id',
         'dudi_id',
         'guru_pembimbing_id',
         'nama_pekerjaan',
         'perencanaan_kegiatan',
-        'pelaksanaa_kegiatan',
+        'pelaksanaan_kegiatan',
         'catatan_instruktur',
         'status_verifikasi',
         'diverifikasi_oleh_dudi',

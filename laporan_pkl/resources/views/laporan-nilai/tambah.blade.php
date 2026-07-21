@@ -6,7 +6,7 @@
 
 <div class="container mt-4 mb-5">
     <div class="card p-4 shadow-sm">
-        <h3 class="fw-bold border-bottom mb-4">Input Informasi dan Nilai Siswa</h3>
+        <h3 class="fw-bold border-bottom mb-4">Tambah Laporan Nilai Siswa</h3>
 
         @if(Auth::guard('guru')->check())
         <form action="{{ route('guru.nilai.store') }}" method="POST">
@@ -29,7 +29,6 @@
                 </div>
             @endif
 
-            <h5 class="fw-bold text-secondary mb-3">1. Informasi Siswa</h5>
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <label for="" class="form-label fw-bold">Nama Murid</label>
@@ -76,7 +75,6 @@
                 </div>
             </div>
 
-            <h5 class="text-secondary fw-bold mb-3">2. Kehadiran & Catatan<i class="bi bi-clock-history ms-2"></i></h5>
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
                     <label for="" class="form-label fw-bold">Sakit (Hari)</label>
@@ -96,7 +94,6 @@
                 </div>
             </div>
 
-            <h5 class="text-secondary fw-bold mb-3">3. Daftar Nilai Siswa</h5>
             <div class="table-responsive mb-4">
                 <table class="table table-bordered align-middle">
                     <thead class="table-dark text-center">
@@ -159,7 +156,6 @@
                 </div>
             @endif
 
-            <h5 class="fw-bold text-secondary mb-3">1. Informasi Siswa</h5>
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <label for="" class="form-label fw-bold">Nama Murid</label>
@@ -206,7 +202,6 @@
                 </div>
             </div>
 
-            <h5 class="text-secondary fw-bold mb-3">2. Kehadiran & Catatan<i class="bi bi-clock-history ms-2"></i></h5>
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
                     <label for="" class="form-label fw-bold">Sakit (Hari)</label>
@@ -226,7 +221,6 @@
                 </div>
             </div>
 
-            <h5 class="text-secondary fw-bold mb-3">3. Daftar Nilai Siswa</h5>
             <div class="table-responsive mb-4">
                 <table class="table table-bordered align-middle">
                     <thead class="table-dark text-center">

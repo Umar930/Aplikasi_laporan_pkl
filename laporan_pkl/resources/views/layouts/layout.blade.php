@@ -50,17 +50,17 @@
             @auth('web')
             <li>
                 <p class=" mb-2 fs-5 fw-bold text-secondary">Dashboard Admin</p>
-                <a href="{{ route('web.observasi') }}" class="nav-link {{ request()->routeIs('web.observasi') ? 'active' : '' }}">
+                <a href="{{ route('web.observasi') }}" class="nav-link {{ request()->routeIs('web.observasi.index') ? 'active' : '' }}">
                     <i class="bi bi-box-seam me-2"></i> Observasi
                 </a>
             </li>
             <li>
-                <a href="{{ route('web.nilai') }}" class="nav-link {{ request()->routeIs('web.nilai') ? 'active' : '' }}">
+                <a href="{{ route('web.nilai') }}" class="nav-link {{ request()->routeIs('web.nilai.index') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
                 </a>
             </li>
             <li>
-                <a href="{{ route('web.kompetensi') }}" class="nav-link {{ request()->routeIs('web.kompetensi') ? 'active' : '' }}">
+                <a href="{{ route('web.kompetensi') }}" class="nav-link {{ request()->routeIs('web.kompetensi.index') ? 'active' : '' }}">
                     <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
                 </a>
             </li>
@@ -74,22 +74,17 @@
             @auth('murid')
             <li>
                 <p class="mb-2 fs-4 fw-bold text-secondary">Dashboard Murid</p>
-                <a href="{{ route('harian') }}" class="nav-link {{ request()->is('laporan-harian') ? 'active' : '' }}">
+                <a href="{{ route('murid.harian') }}" class="nav-link {{ request()->is('laporan-harian') ? 'active' : '' }}">
                     <i class="bi bi-clipboard-fill me-2"></i> Laporan Harian
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('bulanan') }}" class="nav-link {{ request()->is('laporan-bulanan') ? 'active' : '' }}">
+                <a href="{{ route('murid.bulanan.index') }}" class="nav-link {{ request()->is('*laporan-bulanan') ? 'active' : '' }}">
                     <i class="bi bi-journals me-2"></i> Laporan Bulanan
                 </a>
             </li>
             <li>
-                <a href="{{ route('murid.kompetensi') }}" class="nav-link {{ request()->routeIs('murid.kompetensi') ? 'active' : '' }}">
-                    <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                <a href="{{ route('murid.profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
                     <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
@@ -98,22 +93,22 @@
             @auth('guru')
             <li>
                 <p class="mb-2 fs-4 fw-bold text-secondary">Dashboard Guru</p>
-                <a href="{{ route('guru.kompetensi') }}" class="nav-link {{ request()->routeIs('guru.kompetensi') ? 'active' : '' }}">
+                <a href="{{ route('guru.jurnal.index') }}" class="nav-link {{ request()->routeIs('*guru.jurnal.index') ? 'active' : '' }}">
                     <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
                 </a>
             </li>
             <li>
-                <a href="{{ route('guru.nilai.index') }}" class="nav-link {{ request()->routeIs('guru.nilai') ? 'active' : '' }}">
+                <a href="{{ route('guru.nilai.index') }}" class="nav-link {{ request()->routeIs('*guru.nilai.index') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
                 </a>
             </li>
             <li>
-                <a href="{{ route('guru.observasi.index') }}" class="nav-link {{ request()->routeIs('guru.observasi') ? 'active' : '' }}">
+                <a href="{{ route('guru.observasi.index') }}" class="nav-link {{ request()->routeIs('*guru.observasi.index') ? 'active' : '' }}">
                     <i class="bi bi-box-seam me-2"></i> Observasi
                 </a>
             </li>
             <li>
-                <a href="{{ route('guru.profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                <a href="{{ route('guru.profil') }}" class="nav-link {{ request()->is('guru.profil') ? 'active' : '' }}">
                     <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>
@@ -122,22 +117,27 @@
             @auth('dudi')
             <li>
                 <p class=" mb-2 fs-4 fw-bold text-secondary">Dashboard Dudi</p>
-                <a href="{{ route('dudi.nilai.index') }}" class="nav-link {{ request()->routeIs('dudi.nilai') ? 'active' : '' }}">
+                <a href="{{ route('dudi.nilai.index') }}" class="nav-link {{ request()->routeIs('*dudi.nilai.index') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
                 </a>
             </li>
             <li>
-                <a href="{{ route('dudi.kompetensi') }}" class="nav-link {{ request()->routeIs('dudi.kompetensi') ? 'active' : '' }}">
+                <a href="{{ route('dudi.jurnal.index') }}" class="nav-link {{ request()->routeIs('*dudi.jurnal.index') ? 'active' : '' }}">
                     <i class="bi bi-journal me-2"></i> Jurnal Kompetensi
                 </a>
             </li>
             <li>
-                <a href="{{ route('dudi.observasi.index') }}" class="nav-link {{ request()->routeIs('dudi.observasi') ? 'active' : '' }}">
+                <a href="{{ route('dudi.observasi.index') }}" class="nav-link {{ request()->routeIs('*dudi.observasi.index') ? 'active' : '' }}">
                     <i class="bi bi-box-seam me-2"></i> Observasi
                 </a>
             </li>
             <li>
-                <a href="{{ route('dudi.profil') }}" class="nav-link {{ request()->is('profil') ? 'active' : '' }}">
+                <a href="{{ route('dudi.bulanan.index') }}" class="nav-link {{ request()->routeIs('*dudi.bulanan.index') ? 'active' : '' }}">
+                    <i class="bi bi-journals me-2"></i> Laporan Bulanan
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('dudi.profil') }}" class="nav-link {{ request()->is('dudi.profil') ? 'active' : '' }}">
                     <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
             </li>

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('guru_pembimbing_id')->constrained('guru_pembimbings')->onDelete('cascade');
             $table->string('nama_pekerjaan');
             $table->string('perencanaan_kegiatan');
-            $table->string('pelaksanaa_kegiatan');
+            $table->string('pelaksanaan_kegiatan');
             $table->text('catatan_instruktur')->nullable();
             $table->enum('status_verifikasi',['pending','diverifikasi'])->default('pending');
             $table->foreignId('diverifikasi_oleh_dudi')->nullable()->constrained('identitas_dudi')->onDelete('set null');

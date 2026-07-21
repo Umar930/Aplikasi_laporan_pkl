@@ -6,7 +6,7 @@
 
 <div class="container mt-4">
     <div class="card p-4 shadow-sm">
-        <h3 class="fw-bold mb-4">Input Observasi Siswa</h3>
+        <h3 class="fw-bold mb-4">Tambah Observasi Siswa</h3>
 
         @if(Auth::guard('guru')->check())
         <form action="{{ route('guru.observasi.store') }}" method="POST">
@@ -29,7 +29,6 @@
             </div>
         @endif
 
-    <h5 class="fw-bold text-secondary">1. Informasi Siswa</h5>
     <div class="row g-3 mb-4">
         <div class="col-md-6">
             <label for="" class="form-label">Nama Murid</label>
@@ -68,7 +67,6 @@
         </div>
     </div>
 
-    <h5 class="fw-bold text-secondary">2. Input Data Observasi Siswa</h5>
     <div class="table-responsive mb-4">
         <table class="table table-bordered align-middle">
             <thead class="table-secondary text-center">
@@ -150,7 +148,6 @@
             </div>
         @endif
 
-    <h5 class="fw-bold text-secondary">1. Informasi Siswa</h5>
     <div class="row g-3 mb-4">
         <div class="col-md-6">
             <label for="" class="form-label">Nama Murid</label>
@@ -189,7 +186,6 @@
         </div>
     </div>
 
-    <h5 class="fw-bold text-secondary">2. Input Data Observasi Siswa</h5>
     <div class="table-responsive mb-4">
         <table class="table table-bordered align-middle">
             <thead class="table-secondary text-center">

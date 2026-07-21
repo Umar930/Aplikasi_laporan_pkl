@@ -30,7 +30,6 @@
             </div>
         @endif
 
-    <h5 class="fw-bold text-secondary">1. Informasi Siswa</h5>
     <div class="row g-3 mb-4">
         <div class="col-md-6">
             <label for="" class="form-label">Nama Murid</label>
@@ -69,7 +68,6 @@
         </div>
     </div>
 
-    <h5 class="fw-bold text-secondary">2. Input Data Observasi Siswa</h5>
     <div class="table-responsive mb-4">
         <table class="table table-bordered align-middle">
             <thead class="table-secondary text-center">
@@ -154,7 +152,6 @@
             </div>
         @endif
 
-    <h5 class="fw-bold text-secondary">1. Informasi Siswa</h5>
     <div class="row g-3 mb-4">
         <div class="col-md-6">
             <label for="" class="form-label">Nama Murid</label>
@@ -193,7 +190,6 @@
         </div>
     </div>
 
-    <h5 class="fw-bold text-secondary">2. Input Data Observasi Siswa</h5>
     <div class="table-responsive mb-4">
         <table class="table table-bordered align-middle">
             <thead class="table-secondary text-center">

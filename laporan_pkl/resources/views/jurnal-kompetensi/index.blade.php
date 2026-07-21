@@ -4,82 +4,89 @@
 
 @section('content')
     <div style="display:flex; flex-direction:column;">
+
+
+        @if(session('sukses'))
+            <div class="alert alert-success alert-dismissible fade show">
+                {{ session('sukses') }}
+            </div>
+        @endif
+
         @unless(Auth::guard('murid')->check())
-        <a class="ms-auto me-2" href=""><button class="btn btn-primary mt-4"><i class="bi bi-plus-lg me-2"></i>Tambah</button></a>
+        <a class="ms-auto me-2" href="{{ route('guru.jurnal.tambah') }}"><button class="btn btn-primary mt-4"><i class="bi bi-plus-lg me-2"></i>Tambah</button></a>
         @endunless
         <br>
-        <table class="table table-hover">
+
+        @if($jurnalAktif)
+        <div class="card shadow-sm p-2 mb-2 mt-2">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <table class="table table-borderless text-start">
+                        <tr><td>Nama Murid</td><td>: {{ $jurnalAktif->murid->nama_murid }}</td></tr>
+                        <tr><td>Kelas</td><td>: {{ $jurnalAktif->murid->kelas }}</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @unless(Auth::guard('murid')->check())
+        <div class="d-flex mb-4 mt-4 gap-2">
+            <a href="{{ route('guru.jurnal.edit', $jurnalAktif->id) }}"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
+            <form action="{{ route('guru.jurnal.hapus', $jurnalAktif->id) }}" method="post">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill me-2"></i>Hapus</button>
+            </form>
+        </div>
+        @endunless
+
+        <table class="table">
             <thead>
                 <tr class="table-success align-middle text-center">
                     <th rowspan="2">No</th>
                     <th rowspan="2">Kompetensi</th>
-                    <th class="table-primary" colspan="2">Pelaksanaan Pembelajaran</th>
+                    <th rowspan="2">Pelaksanaan Pembelajaran</th>
                     <th rowspan="2">Nilai Minimal Kompetensi</th>
                     <th rowspan="2">Nilai Kompetensi</th>
-                    <th rowspan="2">Tanggal</th>
+                    <th width="15%" rowspan="2">Tanggal</th>
                     <th rowspan="2">Keterangan</th>
                     <th rowspan="2">Status Diverifikasi</th>
-                    @unless(Auth::guard('murid')->check())
-                    <th rowspan="2">Aksi</th>
-                    @endunless
-                </tr>
-                <tr class="table-primary align-middle text-center">
-                    <th>Sekolah</th>
-                    <th>Dunia Kerja</th>
                 </tr>
             </thead>
             <tbody>
                 @php $no = 1; @endphp
-                @forelse($kompetensi_dasars as $kategori => $items)
-                @foreach($items as $index => $item)
+
+                @forelse($detailGroup as $kategori => $details)
                 <tr class="text-center">
-                    @if($loop->first)
-                    <td rowspan="{{ $items->count() + 6 }}" class="text-center fw-bold bg-light">{{ $no++ }}</td>
+                    <td rowspan="{{ $details->count() + 1 }}" class="text-center fw-bold bg-light">{{ $no++ }}</td>
                     <td class="fw-bold bg-light">{{ $kategori }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    @endif
                 </tr>
-                <tr>
-                    <td>{{ $index + 1 }}. {{ $item->nama_kompetensi }}</td>
-                    @unless(Auth::guard('murid')->check())
-                    <td colspan="2" class="text-center align-middle">
-                        <select class="form-select" name="pelaksanaan_pembelajran" id="pelaksanaan_pembelajaran">
-                            <option value="">Sekolah dan Dunia Kerja</option>
-                            <option value="">Sekolah</option>
-                            <option value="">Dunia Kerja</option>
-                        </select>
-                    </td>
-                    @endunless
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    @unless(Auth::guard('murid')->check())
+                @foreach($details as $index => $detail)
+                <tr class="align-middle">
+                    <td>{{ $index + 1 }}. {{ $detail->kompetensi->nama_kompetensi ?? '-' }}</td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <a href="#"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
-                            <a href="#"><button class="btn btn-danger"><i class="bi bi-trash-fill me-2"></i>Hapus</button></a>
-                        </div>
+                        {{ $detail->pelaksanaan_pembelajaran }}
                     </td>
-                    @endunless
-                @endforeach
+                    <td class="text-center fw-bold">{{ $detail->nilai_minimal_kompetensi }}</td>
+                    <td class="text-center fw-bold {{ $detail->nilai_kompetensi >= $detail->nilai_minimal_kompetensi ? 'text-success' : 'text-danger' }}">{{ $detail->nilai_kompetensi }}</td>
+                    <td class="text-center">{{ \Carbon\Carbon::parse($detail->tanggal)->format('Y-m-d') }}</td>
+                    <td class="text-center fw-bold">{{ $detail->keterangan ?? '-' }}</td>
+                    <td></td>
                 </tr>
+                @endforeach
                 @empty
                 <tr>
                     <td colspan="9" class="text-center align-middle py-5">
-                        Belum ada data.
+                        Belum ada data Jurnal.
                     </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
+        @else
+            <div class="alert alert-danger fw-bold text-center mt-4">
+                Belum ada data Jurnal Kompetensi Siswa
+            </div>
+        @endif
     </div>
 @endsection

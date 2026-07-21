@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use APP\Models\Jurnal_Kompetensi;
-use APP\Models\Kompetensi_Dasar;
+use App\Models\Jurnal_Kompetensi;
+use App\Models\Kompetensi_Dasar;
 
 class JurnalDetail extends Model
 {
@@ -25,6 +25,6 @@ class JurnalDetail extends Model
     }
 
     public function kompetensi(){
-        return $this->belongsTo(Kompetensi_Dasar::class,'kompetensi_dasar');
+        return $this->belongsTo(Kompetensi_Dasar::class,'kompetensi_dasar_id');
     }
 }

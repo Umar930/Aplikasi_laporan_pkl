@@ -29,12 +29,12 @@
                         <tr><td class="fw-bold">Program Keahlian </td><td>: {{ $laporanAktif->program_keahlian }}</td></tr>
                         <tr><td class="fw-bold">Konsentrasi Keahlian </td><td>: {{ $laporanAktif->konsentrasi_keahlian }}</td></tr>
                         <tr><td class="fw-bold">Tempat PKL </td><td>: {{ $laporanAktif->tempat_pkl }}</td></tr>
-                        <tr><td class="fw-bold">Tanggal Mulai & Berakhir </td><td>: {{ $laporanAktif->tanggal_mulai }} s/d {{ $laporanAktif->tanggal_berakhir }}</td></tr>
+                        <tr><td class="fw-bold">Tanggal Mulai & Berakhir </td><td>: {{ $laporanAktif->tanggal_mulai }} <strong>s/d</strong> {{ $laporanAktif->tanggal_berakhir }}</td></tr>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-end mb-4 gap-2">
+        <div class="d-flex justify-content-end mb-4 mt-4 gap-2">
             @if (Auth::guard('guru')->check())
             <a href="{{ route('guru.nilai.edit', $laporanAktif->id) }}"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
             <form action="{{ route('guru.nilai.destroy', $laporanAktif->id) }}" method="POST">
@@ -53,7 +53,7 @@
             </form>
             @endif
         </div>
-        <table border="1" class="table table-hover mb-5">
+        <table border="1" class="table mb-5">
             <thead>
                 <tr class="table-danger align-middle text-center">
                     <th rowspan="2">No</th>

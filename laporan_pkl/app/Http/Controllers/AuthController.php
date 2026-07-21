@@ -158,7 +158,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
             
             if ($guard === 'dudi') return redirect()->route('dudi.nilai.index');
-            if ($guard === 'guru') return redirect()->route('guru.kompetensi');
+            if ($guard === 'guru') return redirect()->route('guru.jurnal.index');
             if ($guard === 'web') return redirect()->route('web.observasi');
         }
         return back()->withErrors(['email'=>'email atau password yang anda masukkan salah atau tidak terdaftar'])->withInput();

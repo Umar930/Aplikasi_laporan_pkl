@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-end mb-4 gap-2">
+        <div class="d-flex justify-content-end mb-4 mt-4 gap-2">
             @if(Auth::guard('guru')->check())
             <a href="{{ route('guru.observasi.edit', $observasiAktif->id) }}"><button class="btn btn-warning"><i class="bi bi-pencil-fill me-2"></i>Edit</button></a>
             <form action="{{ route('guru.observasi.destroy', $observasiAktif->id) }}" method="POST">
