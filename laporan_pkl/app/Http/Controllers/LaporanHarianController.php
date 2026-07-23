@@ -8,43 +8,46 @@ use App\Models\Murid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class HarianController extends Controller
+class LaporanHarianController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
+
+        $selectedMuridId = null; 
+        $murids = collect();
+
         if(Auth::guard('murid')->check()){
-            $murid_id=Auth::guard('murid')->id();
-            $laporans=Laporan_Harian::where('murid_id',$murid_id)->latest()->get();
-            return view('laporan-harian.index',compact('laporans'));
-        }
-        if(Auth::guard('guru')->check()){
+            $selectedMuridId=Auth::guard('murid')->id();
+        }elseif(Auth::guard('guru')->check()){
             $guruId=Auth::guard('guru')->id();
-            $laporans=Laporan_Harian::whereHas('murid',function($query) use ($guruId){
-            $query->where('guru_pembimbing_id',$guruId);
-            })->with('murid')->latest()->get();
-            return view('laporan-harian.index',compact('laporans'));
-        }
-        if(Auth::guard('dudi')->check()){
+            $murids=Murid::where('guru_pembimbing_id', $guruId)->get();
+            $selectedMuridId = $request->get('murid_id', $murids->first()?->id);
+        }elseif(Auth::guard('dudi')->check()){
             $dudiId=Auth::guard('dudi')->id();
-            $laporans=Laporan_Harian::whereHas('murid',function($query) use ($dudiId){
-            $query->where('dudi_id',$dudiId);
-            })->with('murid')->latest()->get();
-            return view('laporan-harian.index',compact('laporans'));
+            $murids=Murid::where('dudi_id', $dudiId)->get();
+            $selectedMuridId = $request->get('murid_id', $murids->first()?->id);
+        }elseif(Auth::guard('web')->check()){
+            $murids = Murid::all();
+            $selectedMuridId = $request->get('murid_id', $murids->first()?->id);
+        }else{
+            abort(403,'akses ditolak');
         }
 
-        if(Auth::guard('web')->check()){
-            $laporans=Laporan_Harian::with(['murid','dudi','guru'])->latest()->get();
-            return view('laporan-harian.index',compact('laporans'));
+        $selectedMurid = Murid::find($selectedMuridId);
+
+        $laporansGroupped = collect();
+        if($selectedMuridId){
+            $laporansGroupped = Laporan_Harian::where('murid_id', $selectedMuridId)
+                ->orderBy('tanggal_hari', 'asc')
+                ->get()
+                ->groupBy('minggu_ke');
         }
 
-        abort(403,'akses ditolak');
+        return view('laporan-harian.index',compact('murids','selectedMuridId','selectedMurid','laporansGroupped'));
     }
     
-    public function edit(Laporan_Harian $laporan){
-        if(!Auth::guard('murid')->check() || $laporan->murid_id !== Auth::guard('murid')->id()){
-            abort(403);
-        }
+    public function edit(Laporan_Harian $laporan,$id){
 
-        if($laporan->status_verifikasi === 'diverifikasi'){
+        if($laporan->diverifikasi_oleh_dudi || $laporan->diverifikasi_oleh_guru){
             return redirect()->back()->with('error','laporan sudah terkunci atau diverifikasi');
         }
 
@@ -52,15 +55,18 @@ class HarianController extends Controller
     }
 
     public function create(){
-        if(!Auth::guard('murid')->check()){
-            abort(403,'akses ditolak');
-        }
-        return view('laporan-harian.tambah',compact('harian'));
+
+        return view('laporan-harian.tambah');
     }
 
     public function store(Request $request){
-        if(Auth::guard('murid')->check()){
-            abort(403,'akses ditolak');
+
+        $muridAktif = Auth::guard('murid')->user();
+
+        $jumlahLaporan = Laporan_Harian::where('murid_id', $muridAktif->id)->count();
+
+        if($jumlahLaporan >= 168){
+            return redirect()->route('laporan-harian.index')->with('error','Anda sudah memenuhi batas maksimal laporan harian');
         }
 
         $request->validate([
@@ -70,15 +76,19 @@ class HarianController extends Controller
             'nilai_karakter_budaya'=>'required|string',
         ]);
 
+        $mingguKe = (int) ceil(($jumlahLaporan + 1) / 7 );
+
         Laporan_Harian::create([
-            'murid_id' => Auth::guard('murid')->id(),
+            'murid_id' => $muridAktif->id,
+            'minggu_ke'=> $mingguKe,
             'tanggal_hari'=>$request->tanggal_hari,
             'kompetensi_dasar'=>$request->kompetensi_dasar,
+            'Topik_pembelajaran'=>$request->Topik_pembelajaran,
             'nilai_karakter_budaya'=>$request->nilai_karakter_budaya,
             'status_verifikasi'=>'pending'
         ]);
 
-        return redirect('laporan-harian.index')->with('sukses','data berhasil di tambahkan');
+        return redirect()->route('murid.harian.index')->with('sukses','berhasil tambah laporan harian untuk minggu ke-'.$mingguKe);
     }
 
     public function show(){
@@ -87,11 +97,7 @@ class HarianController extends Controller
     
     public function update(Request $request,Laporan_Harian $laporan){
 
-        if(!Auth::guard('murid')->check() || $laporan->murid_id !== Auth::guard('murid')->id()){
-            abort(403);
-        }
-
-        if($laporan->status_verifikasi === 'diverifikasi'){
+        if($laporan->diverifikasi_oleh_dudi || $laporan->diverifikasi_oleh_guru){
             return redirect()->back()->with('error','laporan sudah dikunci atau diverifikasi');
         }
 
@@ -104,38 +110,53 @@ class HarianController extends Controller
 
         $laporan->update($request->all());
 
-        return redirect('laporan-harian.index')->with('sukses','data berhasil diubah');
+        return redirect('murid.harian.index')->with('sukses','data laporan harian berhasil diupdate');
     }
     
-    public function delete(Laporan_Harian $laporan){
-        if(!Auth::guard('murid')->check() || $laporan->murid_id !== Auth::guard('murid')->id()){
-            abort(403);
-        }
+    public function delete(Laporan_Harian $laporan,$id){
 
-        if($laporan->status_verifikasi === 'diverifikasi'){
+        if($laporan->diverifikasi_oleh_dudi || $laporan->diverifikasi_oleh_guru){
             return redirect()->back()->with('error','laporan sudah diverifikasi atau dikunci');
         }
 
+        $laporan = Laporan_Harian::findOrFail($id);
         $laporan->delete();
-        return redirect('laporan-harian.index')->with('sukses','data berhasil dihapus');
+        return redirect()->route('murid.harian.index')->with('sukses','data laporan harian berhasil dihapus');
     }
 
-    public function verifikasi(Request $request,$id){
+    public function verifikasiDudi(Request $request,$id){
         $laporan=Laporan_Harian::findOrFail($id);
 
-        if(Auth::guard('guru')->check()){
-            $laporan->diverifikasi_oleh_guru=Auth::guard('guru')->id();
-        }
-        elseif(Auth::guard('dudi')->check()){
-            $laporan->diverifikasi_oleh_dudi=Auth::guard('dudi')->id();
-        }
-        elseif(Auth::guard('web')->check()){
-            $laporan->diverifikasi_oleh_admin=Auth::guard('web')->id();
-        }
-        else{
-            abort(403,'akses anda ditolak');
+        if(!Auth::guard('dudi')->check()){
+            abort(403, 'Akses khusus Pembimbing Dudi');
         }
 
-        return redirect()->route('laporan-harian.index')->with('sukses','data telah berhasil diverifikasi');
+        $laporan->update([
+            'diverifikasi_oleh_dudi' => Auth::guard('dudi')->id()
+        ]);
+    
+
+        return redirect()->back()->with('sukses','Laporan Harian berhasil diverifikasi');
+    }
+
+    public function verifikasiGuru(Request $request,$id){
+        $laporan=Laporan_Harian::findOrFail($id);
+
+        if(!Auth::guard('guru')->check()){
+            abort(403, 'Akses khusus Guru Pembimbing');
+        }
+
+        $request->validate([
+            'murid_id'=>'required|exists:murid,id',
+            'minggu_ke'=>'required|integer',
+        ]);
+
+        Laporan_Harian::where('murid_id',$request->murid_id)
+            ->where('minggu_ke',$request->minggu_ke)
+            ->update([
+                'diverifikasi_oleh_guru' => Auth::guard('guru')->id()
+            ]);
+
+        return redirect()->back()->with('sukses','seluruh laporan harian Minggu ke-' . $request->minggu_ke . 'berhasil diverifikasi');
     }
 } 

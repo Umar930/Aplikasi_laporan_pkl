@@ -16,6 +16,23 @@
         </div>
     @endif
 
+    @if(Auth::guard('dudi')->check())
+        <div class="card shadow-sm p-3 mb-4">
+            <form action="{{ route('dudi.bulanan.index') }}" method="get" class="row align-items-center">
+                <label for="murid_id" class="col-md-2 col-form-label fw-bold">Pilih Murid</label>
+                <select name="murid_id" id="murid_id" class="form-select" onchange="this.form.submit()">
+                    @forelse($murids as $m)
+                        <option value="{{ $m->id }}" {{ $selectedMuridId == $m->id ? 'selected' : '' }}>
+                            {{ $m->nama_murid }} - ({{ $m->nis ?? 'NIS -' }})
+                        </option>
+                    @empty
+                        <option value="">-- Belum ada Murid --</option>
+                    @endforelse
+                </select>
+            </form>
+        </div>
+    @endif
+
     @if(Auth::guard('murid')->check())
         @if($laporans->count() < 6)
             <div class="d-flex justify-content-end mb-3">
@@ -27,9 +44,9 @@
 
         <div class="card shadow-sm p-2 mb-4">
             <div class="row align-items-center">
-                <div class="col-md-10">
+                <div class="col-md-7">
                     @php
-                        $laporanAwal = $laporans->first()
+                        $laporanAwal = $laporans->first();
                     @endphp
                     <table class="table table-borderless text-start">
                         <tr><td>Nama Siswa</td><td>: {{ $laporanAwal->murid->nama_murid ?? '-' }}</td></tr>
@@ -42,7 +59,7 @@
 
         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
             @for($i = 1; $i <= 6; $i++)
-                @php $lapbulan = $laporans->get($i-1); @endphp
+                @php $lapbulan = $laporans->get($i); @endphp
                 <li class="nav-item" role="presentation">
                     <button 
                         class="nav-link {{ $i === 1 ? 'active' : '' }} me-2"
@@ -52,7 +69,7 @@
                         type="button" role="tab">
                         Bulan {{ $i }}
                         @if($lapbulan)
-                            @if($lapbulan)
+                            @if($lapbulan->status_verifikasi === 'diverifikasi')
                                 <span class="badge bg-success ms-1"><i class="bi bi-check-circle"></i></span>
                             @else
                                 <span class="badge bg-warning text-dark ms-1"><i class="bi bi-clock"></i></span>
@@ -66,7 +83,7 @@
         <div class="tab-content" id="pills-tabcontent">
             @for($i = 1; $i <= 6; $i++)
             
-            @php $laporan = $laporans->get($i-1); @endphp
+            @php $laporan = $laporans->get($i); @endphp
             <div class="tab-pane fade {{ $i === 1 ? 'show active' : '' }}" id="pills-bulan-{{ $i }}" role="tabpanel">
                 <div class="card shadow-sm p-3">
                     <table class="table table-bordered align-middle text-center">

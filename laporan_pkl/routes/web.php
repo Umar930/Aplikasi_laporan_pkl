@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KompetensiDasarController;
 use App\Http\Controllers\TujuanPembelajaranController;
+use App\Http\Controllers\LaporanHarianController;
 use App\Http\Controllers\JurnalKompetensiController;
 use App\Http\Controllers\DaftarNilaiController;
 use App\Http\Controllers\ObservasiController;
@@ -32,9 +33,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Route untuk halaman bagian
 
 Route::middleware(['auth:murid'])->prefix('murid')->name('murid.')->group(function (){
-    Route::get('/laporan-harian', function(){
-    return view('laporan-harian.index');
-    })->name('harian');
+    Route::get('/laporan-harian', [LaporanHarianController::class, 'index'])->name('harian.index');
+    Route::get('/laporan-harian/tambah', [LaporanHarianController::class, 'create'])->name('harian.tambah');
+    Route::post('/laporan-harian', [LaporanHarianController::class, 'store'])->name('harian.store');
+    Route::get('/laporan-harian/{id}/edit', [LaporanHarianController::class, 'edit'])->name('harian.edit');
+    Route::put('/laporan-harian/{id}', [LaporanHarianController::class, 'update'])->name('harian.update');
+    Route::delete('/laporan-harian/{id}', [LaporanHarianController::class, 'delete'])->name('harian.delete');
 
     Route::get('/laporan-bulanan', [LaporanBulananController::class, 'index'])->name('bulanan.index');
     Route::get('/laporan-bulanan/tambah', [LaporanBulananController::class, 'create'])->name('bulanan.tambah');
@@ -78,6 +82,10 @@ Route::middleware(['auth:dudi'])->prefix('dudi')->name('dudi.')->group(function 
     Route::delete('/laporan-bulanan/{id}', [LaporanBulananController::class, 'delete'])->name('bulanan.delete');
     Route::post('/laporan-bulanan/{id}', [LaporanBulananController::class, 'verifikasi'])->name('bulanan.verifikasi');
 
+    Route::get('/laporan-harian', [LaporanHarianController::class, 'index'])->name('harian.index');
+    Route::post('/laporan-harian/{id}', [LaporanHarianController::class, 'verifikasiDudi'])->name('harian.verifikasi');
+    Route::delete('/laporan-harian/{id}', [LaporanHarianController::class, 'delete'])->name('harian.delete');
+
     Route::get('/profil', function(){
     return view('profil.index');
     })->name('profil');
@@ -104,6 +112,10 @@ Route::middleware(['auth:guru'])->prefix('guru')->name('guru.')->group(function 
     Route::get('/observasi/{id}/edit', [ObservasiController::class, 'edit'])->name('observasi.edit');
     Route::put('/observasi/{id}', [ObservasiController::class, 'update'])->name('observasi.update');
     Route::delete('/observasi/{id}', [ObservasiController::class, 'destroy'])->name('observasi.destroy');
+
+    Route::get('/laporan-harian', [LaporanHarianController::class, 'index'])->name('harian.index');
+    Route::post('/laporan-harian/{id}', [LaporanHarianController::class, 'verifikasiGuru'])->name('harian.verifikasi');
+    Route::delete('/laporan-harian/{id}', [LaporanHarianController::class, 'delete'])->name('harian.delete');
 
     Route::get('/profil', function(){
     return view('profil.index');

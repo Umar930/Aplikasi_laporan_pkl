@@ -74,7 +74,7 @@
             @auth('murid')
             <li>
                 <p class="mb-2 fs-4 fw-bold text-secondary">Dashboard Murid</p>
-                <a href="{{ route('murid.harian') }}" class="nav-link {{ request()->is('laporan-harian') ? 'active' : '' }}">
+                <a href="{{ route('murid.harian.index') }}" class="nav-link {{ request()->is('*murid.harian.index') ? 'active' : '' }}">
                     <i class="bi bi-clipboard-fill me-2"></i> Laporan Harian
                 </a>
             </li>
@@ -108,6 +108,11 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('guru.harian.index') }}" class="nav-link {{ request()->routeIs('*guru.harian.index') ? 'active' : '' }}">
+                    <i class="bi bi-clipboard-fill me-2"></i> Laporan Harian
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('guru.profil') }}" class="nav-link {{ request()->is('guru.profil') ? 'active' : '' }}">
                     <i class="bi bi-person-lines-fill me-2"></i> Profil
                 </a>
@@ -134,6 +139,11 @@
             <li>
                 <a href="{{ route('dudi.bulanan.index') }}" class="nav-link {{ request()->routeIs('*dudi.bulanan.index') ? 'active' : '' }}">
                     <i class="bi bi-journals me-2"></i> Laporan Bulanan
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('dudi.harian.index') }}" class="nav-link {{ request()->routeIs('*dudi.harian.index') ? 'active' : '' }}">
+                    <i class="bi bi-clipboard-fill me-2"></i> Laporan Harian
                 </a>
             </li>
             <li>

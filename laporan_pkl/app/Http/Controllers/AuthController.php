@@ -141,7 +141,7 @@ class AuthController extends Controller
             if ($murid) {
             Auth::guard('murid')->login($murid, $request->filled('remember'));
             $request->session()->regenerate();
-            return redirect()->route('murid.harian');
+            return redirect()->route('murid.harian.index');
             }
 
             return back()->withErrors(['nis'=>'Nis tidak ditemukan'])->withInput();

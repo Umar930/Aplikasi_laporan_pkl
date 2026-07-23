@@ -14,6 +14,7 @@ class Laporan_Bulanan extends Model
         'murid_id',
         'dudi_id',
         'guru_pembimbing_id',
+        'bulan_ke',
         'nama_pekerjaan',
         'perencanaan_kegiatan',
         'pelaksanaan_kegiatan',

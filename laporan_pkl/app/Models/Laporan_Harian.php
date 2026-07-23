@@ -7,8 +7,10 @@ use App\Models\Murid;
 
 class Laporan_Harian extends Model
 {
+  protected $table = 'laporan_harians';
     protected $fillable=[
       'murid_id',
+      'minggu_ke',
       'tanggal_hari',
       'kompetensi_dasar',
       'Topik_pembelajaran',

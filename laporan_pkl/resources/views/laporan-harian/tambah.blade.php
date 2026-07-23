@@ -1,44 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <div>
-        <h2>Tambah Jurnal</h2>
-        <form action="{{ route('jurnal-kegiatan.store') }}" method="post">
+@extends('layouts.layout')
+
+@section('title', 'Tambah Laporan Harian')
+
+@section('content')
+
+<div class="container mb-4 mt-4">
+    <div class="card shadow-sm p-4">
+        <h3 class="fw-bold">Tambah Laporan Harian</h3>
+        <form action="{{ route('murid.harian.store') }}" method="post">
             @csrf
-            <label for="">Hari/Tanggal</label>
-            <br>
-            <input type="date" name="hari_tanggal" value="{{ old('hari_tanggal') }}">
-            <br>
-            <label for="">Kompetensi</label>
-            <br>
-            <input type="text" name="kompetensi" value="{{ old('kompetensi') }}">
-            <br>
-            <label for="">Topik Pekerjaan</label>
-            <br>
-            <input type="text" name="topik_pekerjaan" value="{{ old('topik_pekerjaan') }}">
-            <br>
-            <label for="">Nilai Karakter</label>
-            <br>
-            <select name="nilai_karakter" value="{{ old('nilai_karakter') }}" id="">
-                <option value="jujur">Jujur</option>
-                <option value="disiplin">Disiplin</option>
-                <option value="mandiri">Mandiri</option>
-            </select>
-            <br>
-            <button type="submit">Tambah</button>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label" for="">Tanggal Hari</label>
+                    <input value="{{ date('Y-m-d') }}" required type="date" class="form-control" name="tanggal_hari">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label" for="">Kompetensi Dasar</label>
+                    <input required type="text" class="form-control" name="kompetensi_dasar">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label" for="">Topik Pembelajaran</label>
+                    <input required type="text" class="form-control" name="Topik_pembelajaran">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label" for="">Nilai Karakter Budaya</label>
+                    <input required type="text" class="form-control" name="nilai_karakter_budaya">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ route('murid.harian.index') }}" class="btn btn-secondary">Batal</a>
+                <button type="submit" class="btn btn-primary">Tambah Laporan Harian</button>
+            </div>
         </form>
-        @if($errors->any())
-        <ul>
-            @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-        @endif
     </div>
-</body>
-</html>
+</div>
+
+@endsection

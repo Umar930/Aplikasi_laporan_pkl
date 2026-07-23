@@ -10,25 +10,33 @@ use Illuminate\Support\Facades\DB;
 
 class LaporanBulananController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
+
+        $selectedMuridId = null;
+        $murids = collect();
+
         if(Auth::guard('murid')->check()){
-            $murid_id=Auth::guard('murid')->id();
-            $laporans=Laporan_Bulanan::where('murid_id',$murid_id)->oldest()->get();
+            $selectedMuridId=Auth::guard('murid')->id();
         } elseif(Auth::guard('guru')->check()){
             $guruId=Auth::guard('guru')->id();
-            $laporans=Laporan_Bulanan::whereHas('murid',function($query) use ($guruId){
-                $query->where('guru_pembimmbing_id',$guruId);
-            })->with('murid')->oldest()->get();
+            $murids = Murid::where('guru_pembimbing_id', $guruId)->get();
+            $selectedMuridId = $request->input('murid_id', $murids->first()?->id);
         } elseif(Auth::guard('dudi')->check()){
             $dudiId=Auth::guard('dudi')->id();
-            $laporans=Laporan_Bulanan::whereHas('murid',function($query) use ($dudiId){
-                $query->where('dudi_id',$dudiId);
-            })->with('murid')->oldest()->get();
+            $murids = Murid::where('dudi_id', $dudiId)->get();
+            $selectedMuridId = $request->input('murid_id', $murids->first()?->id);
         } else{
             abort(403, 'Akses ditolak');
         }
+
+        $laporans = Laporan_Bulanan::where('murid_id', $selectedMuridId)
+        ->with(['murid','pembimbing','dudi'])
+        ->get()
+        ->keyBy(function($item){
+            return (int) $item->bulan_ke;
+        });
         
-        return view('laporan-bulanan.index',compact('laporans'));
+        return view('laporan-bulanan.index',compact('laporans', 'selectedMuridId','murids'));
     }
     public function show(){
         
@@ -48,11 +56,9 @@ class LaporanBulananController extends Controller
     }
     
     public function store(Request $request){
-
-
         $muridAktif=Auth::guard('murid')->user();
 
-        $jumlahLaporan = Laporan_Bulanan::where('murid_id', $muridAktif)->count();
+        $jumlahLaporan = Laporan_Bulanan::where('murid_id', $muridAktif->id)->count();
 
         if($jumlahLaporan >= 6){
             return redirect()->route('laporan-bulanan.index')->with('error','anda sudah membuat 6 laporan bulanan!');
@@ -65,10 +71,13 @@ class LaporanBulananController extends Controller
             'pelaksanaan_kegiatan'=>'required|string',
             ]);
 
+            $bulanke = $jumlahLaporan + 1;
+
             Laporan_Bulanan::create([
                 'murid_id'=>$muridAktif->id,
                 'dudi_id'=>$muridAktif->dudi_id,
                 'guru_pembimbing_id'=>$muridAktif->guru_pembimbing_id,
+                'bulan_ke'=>$bulanke,
                 'nama_pekerjaan'=>$request->nama_pekerjaan,
                 'perencanaan_kegiatan'=>$request->perencanaan_kegiatan,
                 'pelaksanaan_kegiatan'=>$request->pelaksanaan_kegiatan,
