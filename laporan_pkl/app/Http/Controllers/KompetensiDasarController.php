@@ -13,7 +13,7 @@ class KompetensiDasarController extends Controller
      */
     public function index()
     {
-        $kompetensi_dasars = Kompetensi_Dasar::all()->groupBy('kategori_utama');
+        $kompetensi_dasars = Kompetensi_Dasar::all();
         return view('jurnal-kompetensi.index', compact('kompetensi_dasars'));
     }
 
@@ -23,11 +23,7 @@ class KompetensiDasarController extends Controller
     public function create()
     {
         
-        if(!Auth::guard('web')->check()){
-            abort(403,'akses ditolak');
-        }
-
-        return view('kompetensi.tambah');
+        return view('jurnal-kompetensi.tambah');
     }
 
     /**
@@ -35,9 +31,6 @@ class KompetensiDasarController extends Controller
      */
     public function store(Request $request)
     {
-        if(!Auth::guard('web')->check()){
-            abort(403,'akses ditolak');
-        }
 
         $request->validate([
             'kategori_utama'=>'required',
@@ -49,7 +42,7 @@ class KompetensiDasarController extends Controller
             'nama_kompetensi'=>$request->nama_kompetensi
         ]);
 
-        return redirect('indikator.index')->with('sukses','data berhasil ditambahkan');
+        return redirect()->route('web.kompetensi.index')->with('sukses','data berhasil ditambahkan');
     }
 
     /**
@@ -69,7 +62,7 @@ class KompetensiDasarController extends Controller
     {
         $kompetensi=Kompetensi_Dasar::findOrFail($id);
 
-        return view('kompetensi.edit',compact('kompetensi'));
+        return view('jurnal-kompetensi.edit',compact('kompetensi'));
     }
 
     /**
@@ -77,17 +70,20 @@ class KompetensiDasarController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if(!Auth::guard('web')->check()){
-            abort(403,'akses ditolak');
-        }
+
         $kompetensi=Kompetensi_Dasar::findOrFail($id);
+
+        $request->validate([
+            'kategori_utama'=>'required',
+            'nama_kompetensi'=>'required'
+        ]);
 
         $kompetensi->update([
             'kategori_utama'=>$request->kategori_utama,
             'nama_kompetensi'=>$request->nama_kompetensi
         ]);
 
-        return redirect('indikator.index')->with('sukses','data berhasil ditambahkan');
+        return redirect()->route('web.kompetensi.index')->with('sukses','data berhasil ditambahkan');
     }
 
     /**
@@ -95,14 +91,11 @@ class KompetensiDasarController extends Controller
      */
     public function destroy(string $id)
     {
-        if(!Auth::guard('web')->check()){
-            abort(403,'akses ditolak');
-        }
 
         $kompetensi=Kompetensi_Dasar::findOrFail($id);
 
         $kompetensi->delete();
 
-        return redirect('kompetensi.index')->with('sukses','data berhasil dihapus');
+        return redirect('web.kompetensi.index')->with('sukses','data berhasil dihapus');
     }
 }

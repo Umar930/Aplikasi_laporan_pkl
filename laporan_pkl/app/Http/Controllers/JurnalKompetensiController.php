@@ -111,7 +111,7 @@ class JurnalKompetensiController extends Controller
             return redirect()->route('guru.jurnal.index')->with('sukses','data berhasill ditambahkan oleh Guru');
         }
         if(Auth::guard('dudi')->check()){
-            return redirect()->route('guru.jurnal.index')->with('sukses','data berhasill ditambahkan oleh Dudi');
+            return redirect()->route('dudi.jurnal.index')->with('sukses','data berhasill ditambahkan oleh Dudi');
         }
 
         return redirect()->route('jurnal-kompetensi.index')->with('sukses','data berhasil ditambahkan');
@@ -183,7 +183,7 @@ class JurnalKompetensiController extends Controller
             return redirect()->route('guru.jurnal.index')->with('sukses', 'Data berhasil diupdate oleh Guru');
         }
         if(Auth::guard('dudi')->check()){
-            return redirect()->route('guru.jurnal.index')->with('sukses', 'Data berhasil diupdate oleh Guru');
+            return redirect()->route('dudi.jurnal.index')->with('sukses', 'Data berhasil diupdate oleh Guru');
         }
 
         return redirect()->route('jurnal-kompetensi.index')->with('sukses','data berhasil diperbarui');
@@ -213,46 +213,29 @@ class JurnalKompetensiController extends Controller
         return redirect()->route('jurnal-kompetensi.index')->with('sukses','data telah dihapus');
     }
 
-    public function verifikasiguru($detailId){
+    public function verifikasidetail($id){
+
+        $detail=Jurnal_Kompetensi::findOrFail($id);
+
         if(!Auth::guard('guru')->check() &&!Auth::guard('dudi')->check()){
             abort(403,'akses ditolak');
         }
-      
-        $detail=JurnalDetail::findOrFail($detailId);
-        if(!$this->cekAksesData($detail->jurnal)){
-            abort(403,'akses ditolak');
+
+        if(Auth::guard('guru')->check()){
+            $detail->diverifikasi_oleh_guru = Auth::guard('guru')->id();
         }
 
-        $detail->diverifikasi_oleh_guru = Auth::guard('guru')->id();
-
-        if(
-    $detail->diverifikasi_oleh_guru &&
-    $detail->diverifikasi_oleh_dudi
-        ){
-    $detail->status_verifikasi='diverifikasi';
+        if(Auth::guard('dudi')->check()){
+            $detail->diverifikasi_oleh_dudi = Auth::guard('dudi')->id();
+        }
+        
+        if($detail->diverifikasi_oleh_guru && $detail->diverifikasi_oleh_dudi){
+            $detail->status_diverifikasi='diverifikasi';
         }
 
         $detail->save();
-    }
 
-    public function verifikasidudi($detailId){
-        if(!Auth::guard('guru')->check() &&!Auth::guard('dudi')->check()){
-            abort(403,'akses ditolak');
-        }
-      
-        $detail=JurnalDetail::findOrFail($detailId);
-        if(!$this->cekAksesData($detail->jurnal)){
-            abort(403,'akses ditolak');
-        }
-
-        if(
-            $detail->diverifikasi_oleh_guru &&
-            $detail->diverifikasi_oleh_dudi
-                ){
-            $detail->status_verifikasi='diverifikasi';
-                }
-        
-                $detail->save();
+        return redirect()->back()->with('sukses','Jurnal Kompetensi berhasil diverifikasi');
     }
 
     private function authCrud(){

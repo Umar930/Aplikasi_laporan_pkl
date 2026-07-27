@@ -24,6 +24,9 @@ return new class extends Migration
             $table->integer('kehadiran_sakit')->default('0');
             $table->integer('kehadiran_ijin')->default('0');
             $table->integer('kehadiran_tanpa_keterangan')->default('0');
+            $table->enum('status_verifikasi',['pending','diverifikasi'])->default('pending');
+            $table->foreignId('diverifikasi_oleh_dudi')->nullable()->constrained('identitas_dudi')->onDelete('set null');
+            $table->foreignId('diverifikasi_oleh_guru')->nullable()->constrained('guru_pembimbings')->onDelete('set null');
             $table->timestamps();
         });
 

@@ -58,7 +58,8 @@ Route::middleware(['auth:dudi'])->prefix('dudi')->name('dudi.')->group(function 
     Route::post('/laporan-nilai', [DaftarNilaiController::class, 'store'])->name('nilai.store');
     Route::get('/laporan-nilai/{id}/edit', [DaftarNilaiController::class, 'edit'])->name('nilai.edit');
     Route::put('/laporan-nilai/{id}', [DaftarNilaiController::class, 'update'])->name('nilai.update');
-    Route::delete('/laporan-nilai/{id}', [DaftarNilaiController::class, 'destroy'])->name('nilai.destroy');
+    Route::delete('/laporan-nilai/{id}', [DaftarNilaiController::class, 'destroy'])->name('nilai.hapus');
+    Route::post('/laporan-nilai/{id}', [DaftarNilaiController::class, 'verifikasiDetail'])->name('nilai.verifikasi');
 
     Route::get('/jurnal-kompetensi', [JurnalKompetensiController::class, 'index'])->name('jurnal.index');
     Route::get('/jurnal-kompetensi/tambah', [JurnalKompetensiController::class, 'create'])->name('jurnal.tambah');
@@ -66,13 +67,15 @@ Route::middleware(['auth:dudi'])->prefix('dudi')->name('dudi.')->group(function 
     Route::get('/jurnal-kompetensi/{id}/edit', [JurnalKompetensiController::class, 'edit'])->name('jurnal.edit');
     Route::put('/jurnal-kompetensi/{id}', [JurnalKompetensiController::class, 'update'])->name('jurnal.update');
     Route::delete('/jurnal-kompetensi/{id}', [JurnalKompetensiController::class, 'destroy'])->name('jurnal.hapus');
+    Route::post('/jurnal-kompetensi/{id}', [JurnalKompetensiController::class, 'verifikasidetail'])->name('jurnal.verifikasi');
     
     Route::get('/observasi', [ObservasiController::class, 'index'])->name('observasi.index');
     Route::get('/observasi/tambah', [ObservasiController::class, 'create'])->name('observasi.tambah');
     Route::post('/observasi', [ObservasiController::class, 'store'])->name('observasi.store');
     Route::get('/observasi/{id}/edit', [ObservasiController::class, 'edit'])->name('observasi.edit');
     Route::put('/observasi/{id}', [ObservasiController::class, 'update'])->name('observasi.update');
-    Route::delete('/observasi/{id}', [ObservasiController::class, 'destroy'])->name('observasi.destroy');
+    Route::delete('/observasi/{id}', [ObservasiController::class, 'destroy'])->name('observasi.hapus');
+    Route::post('/observasi/{id}', [ObservasiController::class, 'verifikasidetail'])->name('observasi.verifikasi');
 
     Route::get('/laporan-bulanan', [LaporanBulananController::class, 'index'])->name('bulanan.index');
     Route::get('/laporan-bulanan/tambah', [LaporanBulananController::class, 'create'])->name('bulanan.tambah');
@@ -98,6 +101,7 @@ Route::middleware(['auth:guru'])->prefix('guru')->name('guru.')->group(function 
     Route::get('/jurnal-kompetensi/{id}/edit', [JurnalKompetensiController::class, 'edit'])->name('jurnal.edit');
     Route::put('/jurnal-kompetensi/{id}', [JurnalKompetensiController::class, 'update'])->name('jurnal.update');
     Route::delete('/jurnal-kompetensi/{id}', [JurnalKompetensiController::class, 'destroy'])->name('jurnal.hapus');
+    Route::post('/jurnal-kompetensi/{id}', [JurnalKompetensiController::class, 'verifikasidetail'])->name('jurnal.verifikasi');
 
     Route::get('/laporan-nilai', [DaftarNilaiController::class, 'index'])->name('nilai.index');
     Route::get('/laporan-nilai/tambah', [DaftarNilaiController::class, 'create'])->name('nilai.tambah');
@@ -105,6 +109,7 @@ Route::middleware(['auth:guru'])->prefix('guru')->name('guru.')->group(function 
     Route::get('/laporan-nilai/{id}/edit', [DaftarNilaiController::class, 'edit'])->name('nilai.edit');
     Route::put('/laporan-nilai/{id}', [DaftarNilaiController::class, 'update'])->name('nilai.update');
     Route::delete('/laporan-nilai/{id}', [DaftarNilaiController::class, 'destroy'])->name('nilai.destroy');
+    Route::post('/laporan-nilai/{id}', [DaftarNilaiController::class, 'verifikasiDetail'])->name('nilai.verifikasi');
 
     Route::get('/observasi', [ObservasiController::class, 'index'])->name('observasi.index');
     Route::get('/observasi/tambah', [ObservasiController::class, 'create'])->name('observasi.tambah');
@@ -112,6 +117,7 @@ Route::middleware(['auth:guru'])->prefix('guru')->name('guru.')->group(function 
     Route::get('/observasi/{id}/edit', [ObservasiController::class, 'edit'])->name('observasi.edit');
     Route::put('/observasi/{id}', [ObservasiController::class, 'update'])->name('observasi.update');
     Route::delete('/observasi/{id}', [ObservasiController::class, 'destroy'])->name('observasi.destroy');
+    Route::post('/observasi/{id}', [ObservasiController::class, 'verifikasidetail'])->name('observasi.verifikasi');
 
     Route::get('/laporan-harian', [LaporanHarianController::class, 'index'])->name('harian.index');
     Route::post('/laporan-harian/{id}', [LaporanHarianController::class, 'verifikasiGuru'])->name('harian.verifikasi');
@@ -125,12 +131,12 @@ Route::middleware(['auth:guru'])->prefix('guru')->name('guru.')->group(function 
 Route::middleware(['auth:web'])->prefix('web')->name('web.')->group(function (){
     Route::get('/observasi', [ObservasiController::class, 'index'])->name('observasi');
 
-    Route::get('/laporan-nilai', [DaftarNilaiController::class, 'index'])->name('nilai');
-    Route::get('/laporan-nilai/tambah', [DaftarNilaiController::class, 'create'])->name('tambah');
-    Route::post('/laporan-nilai', [DaftarNilaiController::class, 'store'])->name('store');
-    Route::get('/laporan-nilai/{id}/edit', [DaftarNilaiController::class, 'edit'])->name('edit');
-    Route::put('/laporan-nilai/{id}', [DaftarNilaiController::class, 'update'])->name('update');
-    Route::delete('/laporan-nilai/{id}', [DaftarNilaiController::class, 'destroy'])->name('destroy');
+    Route::get('/laporan-nilai', [DaftarNilaiController::class, 'index'])->name('nilai.index');
+    Route::get('/laporan-nilai/tambah', [DaftarNilaiController::class, 'create'])->name('nilai.tambah');
+    Route::post('/laporan-nilai', [DaftarNilaiController::class, 'store'])->name('nilai.store');
+    Route::get('/laporan-nilai/{id}/edit', [DaftarNilaiController::class, 'edit'])->name('nilai.edit');
+    Route::put('/laporan-nilai/{id}', [DaftarNilaiController::class, 'update'])->name('nilai.update');
+    Route::delete('/laporan-nilai/{id}', [DaftarNilaiController::class, 'destroy'])->name('nilai.destroy');
 
     Route::get('/jurnal-kompetensi', [KompetensiDasarController::class, 'index'])->name('kompetensi');
 

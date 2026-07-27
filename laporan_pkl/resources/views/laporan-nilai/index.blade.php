@@ -18,6 +18,11 @@
         @endif
         <br>
 
+        @if (Auth::guard('web')->check())
+            <a class="ms-auto me-2" href="{{ route('web.nilai.tambah') }}"><button class="btn btn-primary mt-4"><i class="bi bi-plus-lg me-2"></i>Tambah Tujuan Pembelajaran</button></a>
+        @endif
+        <br>
+
 
         @if ($laporanAktif)
         <div class="card bg-light border-0 shadow-sm p-4 mb-4">
@@ -34,26 +39,42 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-end mb-4 mt-4 gap-2">
-            @if (Auth::guard('guru')->check())
-            <a href="{{ route('guru.nilai.edit', $laporanAktif->id) }}"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
-            <form action="{{ route('guru.nilai.destroy', $laporanAktif->id) }}" method="POST">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-danger"><i class="bi bi-trash-fill me-2"></i>Hapus</button>
-            </form>
+        <div class="d-flex gap-2 mb-3 mt-3">
+            @if(Auth::guard('guru')->check())
+                @if($laporanAktif->status_verifikasi !== 'diverifikasi')
+                    <a href="{{ route('guru.nilai.edit', $laporanAktif->id) }}"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
+                @else
+                    <span class="text-muted fs-7"><i>Dikunci</i></span>
+                    <form action="{{ route('guru.nilai.hapus', $laporanAktif->id) }}" method="post">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill">Hapus</i></button>
+                    </form>
+                @endif
             @endif
-
-            @if (Auth::guard('dudi')->check())
-            <a href="{{ route('dudi.nilai.edit', $laporanAktif->id) }}"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
-            <form action="{{ route('dudi.nilai.destroy', $laporanAktif->id) }}" method="POST">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-danger"><i class="bi bi-trash-fill me-2"></i>Hapus</button>
-            </form>
+        
+            @if(Auth::guard('dudi')->check())
+                @if($laporanAktif->status_verifikasi !== 'diverifikasi')
+                    <a href="{{ route('dudi.nilai.edit', $laporanAktif->id) }}"><button class="btn btn-warning"><i class="bi bi-pen-fill me-2"></i>Edit</button></a>
+                @else
+                    <span class="text-muted fs-7"><i>Dikunci</i></span>
+                    <form action="{{ route('dudi.nilai.hapus', $laporanAktif->id) }}" method="post">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill">Hapus</i></button>
+                    </form>
+                @endif
             @endif
         </div>
-        <table border="1" class="table mb-5">
+
+        @php
+            $barisTabel = 0;
+            foreach($nilaiEksis as $detail){
+                $barisTabel += ( 1 + $detail->count() + 1 );
+            }
+        @endphp
+
+        <table border="1" class="table table-bordered mb-5">
             <thead>
                 <tr class="table-danger align-middle text-center">
                     <th rowspan="2">No</th>
@@ -61,11 +82,14 @@
                     <th rowspan="2">Skor</th>
                     <th rowspan="2">Deskripsi</th>
                     <th class="table-secondary" colspan="3">Kehadiran</th>
+                    <th colspan="2">Status Verifikasi</th>
                 </tr>
                 <tr class="table-secondary align-middle text-center">
                     <th>Sakit</th>
                     <th>Ijin</th>
                     <th>Tanpa Keterangan</th>
+                    <th>Diverifikasi Dudi</th>
+                    <th>Diverifikasi Guru</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,6 +106,42 @@
                     <td rowspan="{{$laporanAktif->nilai_details->count()}}" class="align-middle">{{ $laporanAktif->kehadiran_sakit }} Hari</td>
                     <td rowspan="{{$laporanAktif->nilai_details->count()}}" class="align-middle">{{ $laporanAktif->kehadiran_ijin }} Hari</td>
                     <td rowspan="{{$laporanAktif->nilai_details->count()}}" class="align-middle">{{ $laporanAktif->kehadiran_tanpa_keterangan }} Hari</td>
+                    <td rowspan="{{ $barisTabel }}" class="align-middle">
+                        @if($laporanAktif->diverifikasi_oleh_dudi)
+                            <span class="badge bg-success py-2 px-3"><i class="bi bi-check-circle me-1"></i>Terverifikasi</span>
+                        @else
+                            @if(Auth::guard('dudi')->check())
+                                <form action="{{ route('dudi.nilai.verifikasi', $laporanAktif->id) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-check-circle me-1"></i>Verifikasi
+                                    </button>
+                                </form>
+                            @else
+                                <span class="badge bg-warning text-dark py-2 px-3">
+                                    <i class="bi bi-hourglass-split me-1"></i>Pending
+                                </span>
+                            @endif
+                        @endif
+                    </td>
+                    <td rowspan="{{ $barisTabel }}" class="align-middle">
+                        @if($laporanAktif->diverifikasi_oleh_guru)
+                            <span class="badge bg-success py-2 px-3"><i class="bi bi-check-circle me-1"></i>Terverifikasi</span>
+                        @else
+                            @if(Auth::guard('guru')->check())
+                                <form action="{{ route('guru.nilai.verifikasi', $laporanAktif->id) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-check-circle me-1"></i>Verifikasi
+                                    </button>
+                                </form>
+                            @else
+                                <span class="badge bg-warning text-dark py-2 px-3">
+                                    <i class="bi bi-hourglass-split me-1"></i>Pending
+                                </span>
+                            @endif
+                        @endif
+                    </td>
                     @endif
                 </tr>
                 @empty
@@ -93,14 +153,13 @@
                 @endforelse
             </tbody>
         </table>
-        @endif
 
-        <div class="d-flex justify-content-center mt-2 mb-4">
+        <div class="d-flex justify-content-center mt-4">
             {{ $nilaiPaginate->links('pagination::bootstrap-5') }}
         </div>
 
         <h4 class="fw-bold me-auto ms-3">Kriteria Penilaian:</h4>
-        <table class="table w-25 me-auto ms-3">
+        <table class="table w-50 me-auto ms-3">
             <thead>
                 <tr class="table-info" style="text-align:center;">
                     <th>No</th>
@@ -146,4 +205,9 @@
                 </div>
             </div>
         </div>
+    @else
+        <div class="text-center align-middle alert alert-danger my-5 py-4 fw-bold shadow-sm col-md-12">
+            Belum ada data Laporan Nilai Siswa
+        </div>
+    @endif
 @endsection

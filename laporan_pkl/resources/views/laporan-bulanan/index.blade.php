@@ -19,16 +19,18 @@
     @if(Auth::guard('dudi')->check())
         <div class="card shadow-sm p-3 mb-4">
             <form action="{{ route('dudi.bulanan.index') }}" method="get" class="row align-items-center">
-                <label for="murid_id" class="col-md-2 col-form-label fw-bold">Pilih Murid</label>
-                <select name="murid_id" id="murid_id" class="form-select" onchange="this.form.submit()">
-                    @forelse($murids as $m)
-                        <option value="{{ $m->id }}" {{ $selectedMuridId == $m->id ? 'selected' : '' }}>
-                            {{ $m->nama_murid }} - ({{ $m->nis ?? 'NIS -' }})
-                        </option>
-                    @empty
-                        <option value="">-- Belum ada Murid --</option>
-                    @endforelse
-                </select>
+                <label for="murid_id" class="col-md-2 fw-bold">Pilih Siswa</label>
+                <div class="col-md-6">
+                    <select name="murid_id" id="murid_id" class="form-select" onchange="this.form.submit()">
+                        @forelse($murids as $m)
+                            <option value="{{ $m->id }}" {{ $selectedMuridId == $m->id ? 'selected' : '' }}>
+                                {{ $m->nama_murid }} - (NIS: {{ $m->nis ?? 'NIS -' }})
+                            </option>
+                        @empty
+                            <option value="">-- Belum ada Murid --</option>
+                        @endforelse
+                    </select>
+                </div>
             </form>
         </div>
     @endif

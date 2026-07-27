@@ -6,9 +6,8 @@
 
 <div class="container mt-4 mb-5">
     <div class="card p-4 shadow-sm">
-        <h3 class="fw-bold border-bottom mb-4">Tambah Laporan Nilai Siswa</h3>
-
         @if(Auth::guard('guru')->check())
+        <h3 class="fw-bold border-bottom mb-4">Tambah Laporan Nilai Siswa</h3>
         <form action="{{ route('guru.nilai.store') }}" method="POST">
             @csrf
 
@@ -98,30 +97,33 @@
                 <table class="table table-bordered align-middle">
                     <thead class="table-dark text-center">
                         <tr>
+                            <th>No</th>
                             <th>Tujuan Pembelajaran</th>
                             <th>Skor</th>
                             <th>Deskripsi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for ($i = 1; $i <= 5; $i++)
+                        @php
+                            $no = 1;
+                        @endphp
+
+                        @foreach($tujuan_pembelajaran as $items)
                         <tr>
+                            <td>{{ $no++ }}</td>
                             <td>
-                                <select name="nilai[{{ $i }}][indikator_id]" id="" class="form-select">
-                                    <option value="">-- Pilih Tujuan Pembelajaran --</option>
-                                    @foreach($tujuan_pembelajaran as $id => $point_utama)
-                                    <option value="{{ $id }}">{{ $point_utama }}</option>
-                                    @endforeach
-                                </select>
+                                {{ $items->point_utama ?? 'Tujuan Pembelajaran tidak diketahui' }}
+
+                                <input type="hidden" name="nilai[{{ $items->id }}][indikator_id]" value="{{ $items->id }}">
                             </td>
                             <td>
-                                <input type="number" name="nilai[{{ $i }}][skor]" class="form-control text-center fw-bold" min="0" max="100">
+                                <input type="number" name="nilai[{{ $items->id }}][skor]" class="form-control text-center fw-bold" min="0" max="100">
                             </td>
                             <td>
-                                <input type="text" name="nilai[{{ $i }}][deskripsi]" class="form-control" placeholder="Deskripsi Kemajuan Kompetensi Siswa">
+                                <input type="text" name="nilai[{{ $items->id }}][deskripsi]" class="form-control" placeholder="Deskripsi Kemajuan Kompetensi Siswa">
                             </td>
                         </tr>
-                        @endfor
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -225,30 +227,33 @@
                 <table class="table table-bordered align-middle">
                     <thead class="table-dark text-center">
                         <tr>
+                            <th>No</th>
                             <th>Tujuan Pembelajaran</th>
                             <th>Skor</th>
                             <th>Deskripsi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for ($i = 1; $i <= 5; $i++)
+                        @php
+                            $no = 1;
+                        @endphp
+
+                        @foreach($tujuan_pembelajaran as $items)
                         <tr>
+                            <td>{{ $no++ }}</td>
                             <td>
-                                <select name="nilai[{{ $i }}][indikator_id]" id="" class="form-select">
-                                    <option value="">-- Pilih Tujuan Pembelajaran --</option>
-                                    @foreach($tujuan_pembelajaran as $id => $point_utama)
-                                    <option value="{{ $id }}">{{ $point_utama }}</option>
-                                    @endforeach
-                                </select>
+                                {{ $items->point_utama ?? 'Tujuan Pembelajaran tidak diketahui' }}
+
+                                <input type="hidden" name="nilai[{{ $items->id }}][indikator_id]" value="{{ $items->id }}">
                             </td>
                             <td>
-                                <input type="number" name="nilai[{{ $i }}][skor]" class="form-control text-center fw-bold" min="0" max="100">
+                                <input type="number" name="nilai[{{ $items->id }}][skor]" class="form-control text-center fw-bold" min="0" max="100">
                             </td>
                             <td>
-                                <input type="text" name="nilai[{{ $i }}][deskripsi]" class="form-control" placeholder="Deskripsi Kemajuan Kompetensi Siswa">
+                                <input type="text" name="nilai[{{ $items->id }}][deskripsi]" class="form-control" placeholder="Deskripsi Kemajuan Kompetensi Siswa">
                             </td>
                         </tr>
-                        @endfor
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -258,6 +263,23 @@
                 <button class="btn btn-success">Simpan Nilai Siswa</button>
             </div>
         </form>
+        @endif
+
+        @if(Auth::guard('web')->check())
+            <h3 class="fw-bold">Tambah Tujuan Pembelajaran</h3>
+            <form action="{{ route('web.pembelajaran.indikator') }}" method="post">
+                @csrf
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="" class="form-label">Point Utama</label>
+                        <input type="text" class="form-control" name="point_utama">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="" class="form-label">Point Detail</label>
+                        <input type="text" class="form-control" name="point_details">
+                    </div>
+                </div>
+            </form>
         @endif
     </div>
 </div>

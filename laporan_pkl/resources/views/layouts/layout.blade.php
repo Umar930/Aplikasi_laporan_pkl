@@ -55,7 +55,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('web.nilai') }}" class="nav-link {{ request()->routeIs('web.nilai.index') ? 'active' : '' }}">
+                <a href="{{ route('web.nilai.index') }}" class="nav-link {{ request()->routeIs('web.nilai.index') ? 'active' : '' }}">
                     <i class="bi bi-calculator me-2"></i> Laporan Nilai
                 </a>
             </li>

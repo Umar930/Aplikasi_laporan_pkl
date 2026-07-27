@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('jurnal_kompetensi', function(Blueprint $table){
             $table->id();
             $table->foreignId('murid_id')->constrained('murid')->onDelete('cascade');
+            $table->enum('status_diverifikasi',['pending','diverifikasi'])->default('pending');
+            $table->foreignId('diverifikasi_oleh_guru')->nullable()->constrained('guru_pembimbings')->onDelete('set null');
+            $table->foreignId('diverifikasi_oleh_dudi')->nullable()->constrained('identitas_dudi')->onDelete('set null');
             $table->timestamps();
         });
 
@@ -26,9 +29,6 @@ return new class extends Migration
             $table->integer('nilai_kompetensi');
             $table->date('tanggal');
             $table->string('keterangan')->nullable();
-            $table->enum('status_diverifikasi',['pending','diverifikasi'])->default('pending');
-            $table->foreignId('diverifikasi_oleh_guru')->nullable()->constrained('guru_pembimbings')->onDelete('set null');
-            $table->foreignId('diverifikasi_oleh_dudi')->nullable()->constrained('identitas_dudi')->onDelete('set null');
             $table->timestamps();
         });
     }

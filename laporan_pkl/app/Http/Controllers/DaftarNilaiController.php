@@ -31,8 +31,8 @@ class DaftarNilaiController extends Controller
         }
 
         $nilaiPaginate = $query->latest()->paginate(1);
-
         $laporanAktif = $nilaiPaginate->first();
+        
         $nilaiEksis = collect();
         if($laporanAktif && $laporanAktif->nilai_details){
             $nilaiEksis = $laporanAktif->nilai_details->keyBy('indikator_id');
@@ -56,17 +56,10 @@ class DaftarNilaiController extends Controller
         }else{
         $murid=Murid::orderBy('nama_murid')->get();
     }
-        $tujuan_pembelajaran=Tujuan_Pembelajaran_Indikator::all()->pluck('point_utama','id')->unique();
+        $tujuan_pembelajaran=Tujuan_Pembelajaran_Indikator::select('id', 'point_utama')->get()->unique('point_utama');
 
         $program = Konsentrasi_Keahlian::pluck('program_keahlian')->unique();
         $konsentrasi = Konsentrasi_Keahlian::all();
-
-        if(Auth::guard('guru')->check()) {
-            return view('laporan-nilai.tambah', compact('program','konsentrasi','murid','tujuan_pembelajaran'));
-        }
-        if(Auth::guard('dudi')->check()) {
-            return view('laporan-nilai.tambah', compact('program','konsentrasi','murid','tujuan_pembelajaran'));
-        }
 
         return view('laporan-nilai.tambah',compact('program','konsentrasi','murid','tujuan_pembelajaran'));
     }
@@ -263,8 +256,8 @@ class DaftarNilaiController extends Controller
         ]);
     }
 
-    public function verifikasidetail($id){
-        $detail=Laporan_nilai_details::findOrFail($id);
+    public function verifikasiDetail($id){
+        $detail=Laporan_Nilai::findOrFail($id);
 
         if(Auth::guard('web')->check()){
             abort(403);
@@ -274,13 +267,10 @@ class DaftarNilaiController extends Controller
         }
 
         if(Auth::guard('dudi')->check()){
-            $detail->diverfikasi_oleh_dudi=Auth::guard('dudi')->id();
+            $detail->diverifikasi_oleh_dudi=Auth::guard('dudi')->id();
         }
         if($detail->diverifikasi_oleh_guru && $detail->diverifikasi_oleh_dudi){
             $detail->status_verifikasi='diverifikasi';
-        }
-        if(Auth::guard('web')->check()){
-            abort(403);
         }
 
         $detail->save();

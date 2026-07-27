@@ -13,30 +13,9 @@ class TujuanPembelajaranController extends Controller
      */
     public function index()
     {
-        $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all()->groupBy('point_utama');
+        $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all();
 
         return view('laporan-nilai.index', compact('tujuan_pembelajaran'));
-    }
-
-    public function guru()
-    {
-        $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all()->groupBy('point_utama');
-
-        return view('observasi.index', compact('tujuan_pembelajaran'));
-    }
-
-    public function dudi()
-    {
-        $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all()->groupBy('point_utama');
-
-        return view('observasi.index', compact('tujuan_pembelajaran'));
-    }
-
-    public function web()
-    {
-        $tujuan_pembelajaran = Tujuan_Pembelajaran_Indikator::all()->groupBy('point_utama');
-
-        return view('observasi.index', compact('tujuan_pembelajaran'));
     }
 
     /**
@@ -44,11 +23,7 @@ class TujuanPembelajaranController extends Controller
      */
     public function create()
     {
-        if(!Auth::guard('web')->check()){
-            abort(403,'akses anda ditolak');
-        }
-        $indikator=Tujuan_Pembelajaran_Indikator::all();
-        return view('indikatot.tambah');
+        return view('laporan-nilai.tambah');
 
     }
 
@@ -58,9 +33,6 @@ class TujuanPembelajaranController extends Controller
     public function store(Request $request)
     {
         
-        if(!Auth::guard('web')->check()){
-            abort(403,'akses anda ditolak');
-        }
 
         $request->validate([
             'point_utama'=>'requeired',
@@ -72,7 +44,7 @@ class TujuanPembelajaranController extends Controller
             'point_details'=>$request->point_details,
         ]);
 
-        return redirect('indikator.index');
+        return redirect()->route('web.nilai.index')->with('sukses','berhasil tambah tujuan pembelajaran');
     }
 
     /**
@@ -80,8 +52,7 @@ class TujuanPembelajaranController extends Controller
      */
     public function show(string $id)
     {
-        $indikator=Tujuan_Pembelajaran_Indikator::all();
-        return view('indikator.index');
+        
     }
 
     /**
@@ -90,7 +61,7 @@ class TujuanPembelajaranController extends Controller
     public function edit($id)
     {
         $indikator=Tujuan_Pembelajaran_Indikator::findOrFail($id);
-        return view('indikator.index',compact('indikator'));
+        return view('laporan-nilai.edit',compact('indikator'));
     }
 
     /**
@@ -99,18 +70,19 @@ class TujuanPembelajaranController extends Controller
     public function update(Request $request, string $id)
     {
 
-        if(!Auth::guard('web')->check()){
-            abort(403,'akses ditolak');
-        }
-
         $indikator=Tujuan_Pembelajaran_Indikator::findOrFail($id);
+
+        $request->validate([
+            'point_utama'=>'requeired',
+            'point_details'=>'required'
+        ]);
 
         $indikator->update([
             'point_utama'=>$request->point_utama,
             'point_details'=>$request->point_details,
         ]);
 
-        return redirect('indikator.index',compact('indikator'));
+        return redirect()->route('web.nilai.index')->with('sukses','berhasil edit tujuan pembelajaran');
     }
 
     /**
@@ -118,12 +90,9 @@ class TujuanPembelajaranController extends Controller
      */
     public function destroy(string $id)
     {
-        if(!Auth::guard('web')->check()){
-            abort(403,'akses ditolak');
-        }
 
         $indikator=Tujuan_Pembelajaran_Indikator::findOrFail($id);
         $indikator->delete();
-        return redirect('indikator.index')->with('sukses','data berhasil dihapus');
+        return redirect()->route('web.nilai.index')->with('sukses','data berhasil dihapus');
     }
 }

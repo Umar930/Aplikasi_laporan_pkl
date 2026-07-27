@@ -47,11 +47,13 @@ class LaporanHarianController extends Controller
     
     public function edit(Laporan_Harian $laporan,$id){
 
+        $laporan = Laporan_Harian::findOrFail($id);
+
         if($laporan->diverifikasi_oleh_dudi || $laporan->diverifikasi_oleh_guru){
             return redirect()->back()->with('error','laporan sudah terkunci atau diverifikasi');
         }
 
-        return view('laporan-harian.edit');
+        return view('laporan-harian.edit', compact('laporan'));
     }
 
     public function create(){
@@ -95,22 +97,30 @@ class LaporanHarianController extends Controller
 
     }
     
-    public function update(Request $request,Laporan_Harian $laporan){
+    public function update(Request $request,Laporan_Harian $laporan,$id){
+
+
+        $laporan = Laporan_Harian::findOrFail($id);
 
         if($laporan->diverifikasi_oleh_dudi || $laporan->diverifikasi_oleh_guru){
             return redirect()->back()->with('error','laporan sudah dikunci atau diverifikasi');
         }
 
         $request->validate([
-            'tanggal_hari'=>'requeired|date',
-            'kompetensi_dasar'=>'requeired|string',
-            'Topik_Pembelajaran'=>'requeired|string',
-            'nilai_karakter_budaya'=>'requeired|string',
+            'tanggal_hari'=>'required|date',
+            'kompetensi_dasar'=>'required|string',
+            'Topik_pembelajaran'=>'required|string',
+            'nilai_karakter_budaya'=>'required|string',
         ]);
 
-        $laporan->update($request->all());
+        $laporan->update([
+            'tanggal_hari'=>$request->tanggal_hari,
+            'kompetensi_dasar'=>$request->kompetensi_dasar,
+            'Topik_pembelajaran'=>$request->Topik_pembelajaran,
+            'nilai_karakter_budaya'=>$request->nilai_karakter_budaya,
+        ]);
 
-        return redirect('murid.harian.index')->with('sukses','data laporan harian berhasil diupdate');
+        return redirect()->route('murid.harian.index')->with('sukses','data laporan harian berhasil diupdate');
     }
     
     public function delete(Laporan_Harian $laporan,$id){
@@ -121,7 +131,14 @@ class LaporanHarianController extends Controller
 
         $laporan = Laporan_Harian::findOrFail($id);
         $laporan->delete();
+
+        if(Auth::guard('dudi')->check()){
+            return redirect()->route('dudi.harian.index')->with('sukses','data laporan harian berhasil dihapus');
+        } elseif(Auth::guard('guru')->check()){
+            return redirect()->route('guru.harian.index')->with('sukses','data laporan harian berhasil dihapus');
+        } else{
         return redirect()->route('murid.harian.index')->with('sukses','data laporan harian berhasil dihapus');
+        }
     }
 
     public function verifikasiDudi(Request $request,$id){

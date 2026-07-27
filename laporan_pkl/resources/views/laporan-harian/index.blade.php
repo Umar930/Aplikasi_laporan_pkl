@@ -20,13 +20,13 @@
 
     @if(!Auth::guard('murid')->check() && $murids->isNotEmpty())
         <div class="card shadow-sm p-3 mb-4">
-            <form method="get" class="row align-items-center g-3" action="{{ route('dudi.harian.index') }}">
+            <form method="get" class="row align-items-center g-2" action="{{ route('dudi.harian.index') }}">
                 <label for="" class="col-md-2 fw-bold">Pilih Siswa</label>
                 <div class="col-md-6">
                     <select name="murid_id" id="murid_id" onchange="this.form.submit()" class="form-select">
                         @foreach($murids as $m)
                             <option value="{{ $m->id }}" {{ $selectedMuridId == $m->id ? 'selected' : '' }}>
-                                {{ $m->nama_murid }} (NIS: {{ $m->nis ?? '-' }})
+                                {{ $m->nama_murid }} - (NIS: {{ $m->nis ?? '-' }})
                             </option>
                         @endforeach
                     </select>
